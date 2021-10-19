@@ -84,17 +84,18 @@ class MattingBase(Base):
     """
 
     def __init__(self, backbone: str):
-        super().__init__(backbone, in_channels=6, out_channels=(1 + 3 + 1 + 32))
+        super().__init__(backbone, in_channels=3, out_channels=(1 + 3 + 1 + 32))
 
-    def forward(self, src, bgr):
-        x = torch.cat([src, bgr], dim=1)
+    def forward(self, src):
+        b, t = src.size()[:2]
+        x = torch.flatten(src, 0, 1)
         x, *shortcuts = self.backbone(x)
         x = self.aspp(x)
-        x = self.decoder(x, *shortcuts)
-        pha = x[:, 0:1].clamp_(0., 1.)
-        fgr = x[:, 1:4].add(src).clamp_(0., 1.)
-        err = x[:, 4:5].clamp_(0., 1.)
-        hid = x[:, 5:].relu_()
+        x = self.decoder(x, *shortcuts, b, t)
+        pha = x[:, :, 0:1].clamp_(0., 1.)
+        fgr = x[:, :, 1:4].add(src).clamp_(0., 1.)
+        err = x[:, :, 4:5].clamp_(0., 1.)
+        hid = x[:, :, 5:]
         return pha, fgr, err, hid
 
 

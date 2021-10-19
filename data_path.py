@@ -22,54 +22,12 @@ dataset to the list as long as it follows the format. 'fgr' should point to fore
 
 DATA_PATH = {
     'demo': {
-        'train': {
-            'fgr': r'D:\Downloads\Background Matting\dataset\demo\train\fgr',
-            'pha': r'D:\Downloads\Background Matting\dataset\demo\train\pha'
-        },
-        'valid': {
-            'fgr': r'D:\Downloads\Background Matting\dataset\demo\test\fgr',
-            'pha': r'D:\Downloads\Background Matting\dataset\demo\test\pha'
-        }
+        'train': r'D:\Downloads\Background Matting\dataset\demo\train',
+        'valid': r'D:\Downloads\Background Matting\dataset\demo\test'
     },
     'videomatte240k': {
-        'train': {
-            'fgr': 'PATH_TO_IMAGES_DIR',
-            'pha': 'PATH_TO_IMAGES_DIR'
-        },
-        'valid': {
-            'fgr': 'PATH_TO_IMAGES_DIR',
-            'pha': 'PATH_TO_IMAGES_DIR'
-        }
-    },
-    'photomatte13k': {
-        'train': {
-            'fgr': 'PATH_TO_IMAGES_DIR',
-            'pha': 'PATH_TO_IMAGES_DIR'
-        },
-        'valid': {
-            'fgr': 'PATH_TO_IMAGES_DIR',
-            'pha': 'PATH_TO_IMAGES_DIR'
-        }
-    },
-    'distinction': {
-        'train': {
-            'fgr': 'PATH_TO_IMAGES_DIR',
-            'pha': 'PATH_TO_IMAGES_DIR',
-        },
-        'valid': {
-            'fgr': 'PATH_TO_IMAGES_DIR',
-            'pha': 'PATH_TO_IMAGES_DIR'
-        },
-    },
-    'adobe': {
-        'train': {
-            'fgr': 'PATH_TO_IMAGES_DIR',
-            'pha': 'PATH_TO_IMAGES_DIR',
-        },
-        'valid': {
-            'fgr': 'PATH_TO_IMAGES_DIR',
-            'pha': 'PATH_TO_IMAGES_DIR'
-        },
+        'train': r'D:\Downloads\Background Matting\dataset\VideoMatte240KFrames\train',
+        'valid': r'D:\Downloads\Background Matting\dataset\VideoMatte240KFrames\test'
     },
     'backgrounds': {
         'train': r'D:\Downloads\Background Matting\dataset\Backgrounds',
