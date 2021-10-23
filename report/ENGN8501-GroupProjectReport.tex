@@ -1,0 +1,139 @@
+% This version of CVPR template is provided by Ming-Ming Cheng.
+% Please leave an issue if you found a bug:
+% https://github.com/MCG-NKU/CVPR_Template.
+
+%\documentclass[review]{cvpr}
+\documentclass[final]{cvpr}
+
+\usepackage{times}
+\usepackage{epsfig}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{amssymb}
+
+\usepackage{url}            % simple URL typesetting
+\usepackage{booktabs}       % professional-quality tables
+\usepackage{amsfonts}       % blackboard math symbols
+\usepackage{nicefrac}       % compact symbols for 1/2, etc.
+\usepackage{microtype}      % microtypography
+
+\usepackage{graphicx}
+\usepackage{amsmath,amssymb} % define this before the line numbering.
+\usepackage{bbold}
+\usepackage{dsfont}
+\usepackage{enumerate}
+\usepackage[toc,page]{appendix}
+\usepackage[font=small,labelfont=bf]{caption}
+
+\usepackage{enumitem}
+
+\usepackage{xcolor}
+\usepackage{caption}
+% \usepackage{subcaption}
+\usepackage{bm}
+\usepackage{isomath}
+\usepackage{arydshln}
+\usepackage{stmaryrd}
+
+% \usepackage{fixltx2e}
+\usepackage{dblfloatfix}
+\usepackage{pbox}
+\usepackage{capt-of}
+
+\usepackage[normalem]{ulem}
+\usepackage{multirow}
+
+\usepackage{colortbl}
+
+\usepackage{mathtools}
+\usepackage{array}
+
+\makeatletter
+\@namedef{ver@everyshi.sty}{}
+\makeatother
+\usepackage{pgf}
+
+\newcommand{\xpt}{\edef\f@size{\@xpt}\rm}
+
+\def\ie{\emph{i.e.}}
+\def\etc{\emph{etc}}
+
+\usepackage{tikz}
+
+\newcommand{\comment}[1]{}
+
+\usepackage{indentfirst}
+\input{definitions.tex}
+
+% Include other packages here, before hyperref.
+
+% If you comment hyperref and then uncomment it, you should delete
+% egpaper.aux before re-running latex.  (Or just hit 'q' on the first latex
+% run, let it finish, and you should be clear).
+\usepackage[pagebackref=true,breaklinks=true,colorlinks,bookmarks=false]{hyperref}
+
+
+\def\cvprPaperID{8501} % *** Enter the CVPR Paper ID here
+\def\confYear{CVPR 2021}
+%\setcounter{page}{4321} % For final version only
+
+\pagestyle{empty}
+%\thispagestyle{empty}
+
+\begin{document}
+
+%%%%%%%%% TITLE
+\title{Video Matting with Convolutional LSTM}
+\author{\underline{Jiahao Zhang} \\ U6921098 \and Peng Zhang \\ U6921163 \and Hang Zhang \\ U6921112}
+
+\maketitle
+\begin{abstract}
+    TODO
+\end{abstract}
+
+
+\section{Introduction}
+
+background
+related works
+motivation
+problem statement
+contribution summary
+
+\section{Problem Statement}
+
+definition, and formulation
+
+\section{Methods}
+
+Method description
+Model structure
+Train
+Dataset
+Loss
+
+\section{Experiments}
+
+Experiments
+Results
+
+\section{Conclusion}
+
+Conclusion
+
+\section{Confidential peer review}
+
+In doing this project, to the best of my judgement,
+I confirm that Jiahao Zhang mainly contributed to TODO,
+and his/her overall contribution is about 34\%,
+Peng Zhang mainly worked on TODO,
+and his/her contribution is about 33\%,
+and Hang Zhang was responsible for TODO,
+and his/her contribution counts about 33\% of the total project workload.
+
+    {\small
+        \bibliographystyle{ieee_fullname}
+        \bibliography{reference}
+    }
+
+\end{document}
