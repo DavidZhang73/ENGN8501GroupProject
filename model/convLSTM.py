@@ -119,10 +119,10 @@ class ConvLSTM(nn.Module):
         """
         Parameters
         ----------
-        input_tensor: todo
+        input_tensor:
             5-D Tensor either of shape (t, b, c, h, w) or (b, t, c, h, w)
-        hidden_state: todo
-            None. todo implement stateful
+        hidden_state:
+            None. List of [h, c] with length equals num_layers
         Returns
         -------
         last_state_list, layer_output
@@ -135,7 +135,8 @@ class ConvLSTM(nn.Module):
 
         # Implement stateful ConvLSTM
         if hidden_state is not None:
-            raise NotImplementedError()
+            if len(hidden_state) != self.num_layers:
+                raise ValueError('len(hidden_state) != num_layers')
         else:
             # Since the init is done in forward. Can send image size here
             hidden_state = self._init_hidden(batch_size=b,
@@ -159,7 +160,7 @@ class ConvLSTM(nn.Module):
             layer_output = torch.stack(output_inner, dim=1)
             cur_layer_input = layer_output
 
-            layer_output_list.append(layer_output.permute(1, 0, 2, 3, 4))
+            layer_output_list.append(layer_output)
             last_state_list.append([h, c])
 
         if not self.return_all_layers:

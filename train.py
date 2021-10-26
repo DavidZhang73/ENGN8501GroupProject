@@ -13,7 +13,7 @@ from torchvision.utils import make_grid
 from tqdm import tqdm
 
 from data_path import DATA_PATH
-from dataset.augmentation import ValidFrameSampler
+from dataset.augmentation import TrainFrameSpeedSampler, ValidFrameSampler
 from dataset.video_matte import VideoMatte240KDataset, VideoMatteTrainAugmentation, VideoMatteValidAugmentation
 from model import MattingBase
 from model.utils import load_matched_state_dict
@@ -23,20 +23,20 @@ from model.utils import load_matched_state_dict
 
 parser = argparse.ArgumentParser()
 
-parser.add_argument('--dataset-name', type=str, default='demo', choices=DATA_PATH.keys())
+parser.add_argument('--dataset-name', type=str, default='videomatte20k', choices=DATA_PATH.keys())
 parser.add_argument('--model-backbone', type=str, default='resnet50', choices=['resnet101', 'resnet50', 'mobilenetv2'])
-parser.add_argument('--model-name', type=str, default='demo')
+parser.add_argument('--model-name', type=str, default='videomatte20k2')
 parser.add_argument('--model-pretrain-initialization', type=str, default=None)
 parser.add_argument('--model-last-checkpoint', type=str, default=None)
 
 parser.add_argument('--batch-size', type=int, default=4)
-parser.add_argument('--seq-length', type=int, default=6)
+parser.add_argument('--seq-length', type=int, default=8)
 parser.add_argument('--num-workers', type=int, default=2)
 parser.add_argument('--epoch-start', type=int, default=0)
-parser.add_argument('--epoch-end', type=int, default=2)
+parser.add_argument('--epoch-end', type=int, default=10)
 
 parser.add_argument('--log-train-loss-interval', type=int, default=10)
-parser.add_argument('--log-train-images-interval', type=int, default=2)
+parser.add_argument('--log-train-images-interval', type=int, default=20)
 parser.add_argument('--log-valid-interval', type=int, default=1000)
 parser.add_argument('--checkpoint-interval', type=int, default=100000)
 
@@ -47,12 +47,13 @@ args = parser.parse_args()
 
 
 def train():
+    torch.autograd.set_detect_anomaly(True)
     # Training DataLoader
     dataset_train = VideoMatte240KDataset(
         video_matte_path=DATA_PATH[args.dataset_name]['train'],
         background_image_path=DATA_PATH['backgrounds']['train'],
         seq_length=args.seq_length,
-        seq_sampler=ValidFrameSampler(),
+        seq_sampler=TrainFrameSpeedSampler(10),
         transform=VideoMatteTrainAugmentation((224, 224))
     )
     dataloader_train = DataLoader(
@@ -60,7 +61,8 @@ def train():
         shuffle=True,
         batch_size=args.batch_size,
         num_workers=args.num_workers,
-        pin_memory=True
+        pin_memory=True,
+        drop_last=True
     )
 
     # Validation DataLoader
@@ -75,7 +77,8 @@ def train():
         dataset_valid,
         pin_memory=True,
         batch_size=args.batch_size,
-        num_workers=args.num_workers
+        num_workers=args.num_workers,
+        drop_last=True
     )
 
     # Model
@@ -99,8 +102,8 @@ def train():
     writer = SummaryWriter(f'log/{args.model_name}')
 
     # Run loop
-    bar = tqdm(dataloader_train, desc='[Train]')
     for epoch in range(args.epoch_start, args.epoch_end):
+        bar = tqdm(dataloader_train, desc='[Train]')
         for i, (fgr, pha, bgr) in enumerate(bar):
             step = epoch * len(dataloader_train) + i + 1
 
@@ -128,7 +131,7 @@ def train():
                 scaler.update()
                 optimizer.zero_grad()
 
-                bar.set_description(f'[Train] Epoch: {epoch}, Loss: {loss:.4f}')
+                bar.set_description(f'[Train] Epoch: {epoch}, Step: {step}, Loss: {loss:.4f}')
 
                 if step % args.log_train_loss_interval == 0:
                     writer.add_scalar('loss', loss, step)

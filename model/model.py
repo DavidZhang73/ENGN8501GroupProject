@@ -4,6 +4,7 @@ from torch.nn import functional as F
 from torchvision.models.segmentation.deeplabv3 import ASPP
 
 from .decoder import Decoder
+# from .decoderConvLSTM import Decoder
 from .mobilenet import MobileNetV2Encoder
 from .refiner import Refiner
 from .resnet import ResNetEncoder

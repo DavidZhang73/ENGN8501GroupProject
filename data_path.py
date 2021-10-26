@@ -29,6 +29,10 @@ DATA_PATH = {
         'train': r'D:\Downloads\Background Matting\dataset\VideoMatte240KFrames\train',
         'valid': r'D:\Downloads\Background Matting\dataset\VideoMatte240KFrames\test'
     },
+    'videomatte20k': {
+        'train': r'D:\Downloads\Background Matting\dataset\VideoMatte20KFrames\train',
+        'valid': r'D:\Downloads\Background Matting\dataset\VideoMatte240KFrames\test'
+    },
     'backgrounds': {
         'train': r'D:\Downloads\Background Matting\dataset\Backgrounds',
         'valid': r'D:\Downloads\Background Matting\dataset\Backgrounds'
