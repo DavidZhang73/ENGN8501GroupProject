@@ -25,20 +25,20 @@ parser = argparse.ArgumentParser()
 
 parser.add_argument('--dataset-name', type=str, default='videomatte20k', choices=DATA_PATH.keys())
 parser.add_argument('--model-backbone', type=str, default='resnet50', choices=['resnet101', 'resnet50', 'mobilenetv2'])
-parser.add_argument('--model-name', type=str, default='videomatte20k2')
+parser.add_argument('--model-name', type=str, default='transferConvLSTM2')
 parser.add_argument('--model-pretrain-initialization', type=str, default=None)
-parser.add_argument('--model-last-checkpoint', type=str, default=None)
+parser.add_argument('--model-last-checkpoint', type=str, default=r'D:\Downloads\Background Matting\models\pytorch_resnet50.pth')
 
 parser.add_argument('--batch-size', type=int, default=4)
 parser.add_argument('--seq-length', type=int, default=8)
-parser.add_argument('--num-workers', type=int, default=2)
+parser.add_argument('--num-workers', type=int, default=0)
 parser.add_argument('--epoch-start', type=int, default=0)
 parser.add_argument('--epoch-end', type=int, default=10)
 
-parser.add_argument('--log-train-loss-interval', type=int, default=10)
+parser.add_argument('--log-train-loss-interval', type=int, default=1)
 parser.add_argument('--log-train-images-interval', type=int, default=20)
 parser.add_argument('--log-valid-interval', type=int, default=1000)
-parser.add_argument('--checkpoint-interval', type=int, default=100000)
+parser.add_argument('--checkpoint-interval', type=int, default=1000)
 
 args = parser.parse_args()
 
@@ -133,10 +133,10 @@ def train():
 
                 bar.set_description(f'[Train] Epoch: {epoch}, Step: {step}, Loss: {loss:.4f}')
 
-                if step % args.log_train_loss_interval == 0:
+                if step == 1 or step % args.log_train_loss_interval == 0:
                     writer.add_scalar('loss', loss, step)
 
-                if step % args.log_train_images_interval == 0:
+                if step == 1 or step % args.log_train_images_interval == 0:
                     writer.add_image(
                         'train_pred_pha',
                         make_grid(torch.flatten(pred_pha, 0, 1), nrow=args.seq_length),
