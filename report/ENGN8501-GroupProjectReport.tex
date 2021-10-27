@@ -66,7 +66,7 @@
 \input{definitions.tex}
 
 % Include other packages here, before hyperref.
-
+\usepackage[numbib]{tocbibind}
 % If you comment hyperref and then uncomment it, you should delete
 % egpaper.aux before re-running latex.  (Or just hit 'q' on the first latex
 % run, let it finish, and you should be clear).
@@ -95,9 +95,8 @@
 \section{Introduction}
 
 background
-related works
 motivation
-problem statement
+related works
 contribution summary
 
 \section{Problem Statement}
@@ -106,22 +105,66 @@ definition, and formulation
 
 \section{Methods}
 
-Method description
-Model structure
-Train
-Dataset
-Loss
+\subsection{Model Structure}
+
+\begin{figure*}[t]
+    \begin{center}
+        \includegraphics[width=1\textwidth]{img/modelConvLSTM.pdf}
+    \end{center}
+    \caption{The architecture of our network.}
+    \label{modelConvLSTM}
+\end{figure*}
+
+\subsubsection{Encoder}
+\subsubsection{ASPP}
+\subsubsection{Decoder}
+
+\subsubsection{ConvLSTM}
+
+\begin{equation}
+    \begin{aligned}
+        \mathbf{i}_{\mathbf{t}} & = \operatorname{Sigmoid}\left(\operatorname{Conv}\left(\mathbf{x}_{\mathbf{t}} ; \mathbf{w}_{\mathbf{x i}}\right)+\operatorname{Conv}\left(\mathbf{h}_{\mathbf{t}-\mathbf{1}} ; \mathbf{w}_{\mathbf{h i}}\right)+\mathbf{b}_{\mathbf{i}}\right)    \\
+        \mathbf{f}_{\mathbf{t}} & = \operatorname{Sigmoid}\left(\operatorname{Conv}\left(\mathbf{x}_{\mathbf{t}} ; \mathbf{w}_{\mathbf{x f}}\right)+\operatorname{Conv}\left(\mathbf{h}_{\mathbf{t}-\mathbf{1}} ; \mathbf{w}_{\mathbf{h f}}\right)+\mathbf{b}_{\mathbf{f}}\right)    \\
+        \mathbf{o}_{\mathbf{t}} & = \operatorname{Sigmoid}\left(\operatorname{Conv}\left(\mathbf{x}_{\mathbf{t}} ; \mathbf{w}_{\mathbf{x o}}\right)+\operatorname{Conv}\left(\mathbf{h}_{\mathbf{t}-\mathbf{1}} ; \mathbf{w}_{\mathbf{h o}}\right)+\mathbf{b}_{\mathbf{o}}\right)    \\
+        \mathbf{g}_{\mathbf{t}} & = \operatorname{Tanh} \quad\left(\operatorname{Conv}\left(\mathbf{x}_{\mathbf{t}} ; \mathbf{w}_{\mathbf{x g}}\right)+\operatorname{Conv}\left(\mathbf{h}_{\mathbf{t}-\mathbf{1}} ; \mathbf{w}_{\mathbf{h g}}\right)+\mathbf{b}_{\mathbf{g}}\right) \\
+        \mathbf{c}_{\mathbf{t}} & = \mathbf{f}_{\mathbf{t}} \odot \mathbf{c}_{\mathbf{t}-\mathbf{1}}+\mathbf{i}_{\mathbf{t}} \odot \mathbf{g}_{\mathbf{t}}                                                                                                                           \\
+        \mathbf{h}_{\mathbf{t}} & = \mathbf{o}_{\mathbf{t}} \odot \operatorname{Tanh}\left(\mathbf{c}_{\mathbf{t}}\right)
+    \end{aligned}
+\end{equation}\label{convLSTM}
+
+
+\subsection{Loss Function}
 
 \section{Experiments}
 
-Experiments
-Results
+\subsection{Experiment Setup}
+
+\subsubsection{Datasets}
+
+\subsubsection{Metrics}
+
+\subsubsection{Implementation}
+
+\subsection{Experiment Results}
+
+\subsubsection{Comparing}
+
+\subsubsection{Ablation Study}
 
 \section{Conclusion}
 
-Conclusion
+Conclusion \cite{chenRethinkingAtrousConvolution2017}
 
-\section{Confidential peer review}
+\section{References}
+
+\bibliographystyle{ieee_fullname}
+\bibliography{reference}
+
+\section{Review}
+
+\subsection{Self Reflection}
+
+\subsection{Confidential Peer Review}
 
 In doing this project, to the best of my judgement,
 I confirm that Jiahao Zhang mainly contributed to TODO,
@@ -130,10 +173,5 @@ Peng Zhang mainly worked on TODO,
 and his/her contribution is about 33\%,
 and Hang Zhang was responsible for TODO,
 and his/her contribution counts about 33\% of the total project workload.
-
-    {\small
-        \bibliographystyle{ieee_fullname}
-        \bibliography{reference}
-    }
 
 \end{document}
