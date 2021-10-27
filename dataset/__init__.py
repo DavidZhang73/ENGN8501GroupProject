@@ -1,4 +1,1 @@
-from .images import ImagesDataset
-from .sample import SampleDataset
-from .video import VideoDataset
-from .zip import ZipDataset
+from .video_matte import VideoMatte240KDataset

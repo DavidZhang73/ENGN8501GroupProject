@@ -1,6 +1,5 @@
 import argparse
 import os
-import random
 
 import kornia
 import torch
@@ -27,7 +26,8 @@ parser.add_argument('--dataset-name', type=str, default='videomatte20k', choices
 parser.add_argument('--model-backbone', type=str, default='resnet50', choices=['resnet101', 'resnet50', 'mobilenetv2'])
 parser.add_argument('--model-name', type=str, default='transferConvLSTM2')
 parser.add_argument('--model-pretrain-initialization', type=str, default=None)
-parser.add_argument('--model-last-checkpoint', type=str, default=r'D:\Downloads\Background Matting\models\pytorch_resnet50.pth')
+parser.add_argument('--model-last-checkpoint', type=str,
+                    default=r'D:\Downloads\Background Matting\models\pytorch_resnet50.pth')
 
 parser.add_argument('--batch-size', type=int, default=4)
 parser.add_argument('--seq-length', type=int, default=8)
@@ -191,17 +191,6 @@ def compute_loss(pred_pha, pred_fgr, pred_err, true_pha, true_fgr):
            F.mse_loss(pred_err, true_err)
 
 
-def random_crop(*imgs):
-    w = random.choice(range(256, 512))
-    h = random.choice(range(256, 512))
-    results = []
-    for img in imgs:
-        img = kornia.resize(img, (max(h, w), max(h, w)))
-        img = kornia.center_crop(img, (h, w))
-        results.append(img)
-    return results
-
-
 def valid(model, dataloader, writer, step):
     model.eval()
     loss_total = 0
@@ -224,7 +213,7 @@ def valid(model, dataloader, writer, step):
                 torch.flatten(true_pha, 0, 1),
                 torch.flatten(true_fgr, 0, 1)
             )
-            bar.set_description(f'[Valid], Loss: {loss:.4f}')
+            bar.set_description(f'[Valid] Loss: {loss:.4f}')
             loss_total += loss.cpu().item() * batch_size
             loss_count += batch_size
 
