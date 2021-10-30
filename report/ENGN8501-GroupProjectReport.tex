@@ -94,18 +94,30 @@
 
 \section{Introduction}
 
-background
-motivation
-related works
-contribution summary
+background TODO
+
+motivation TODO
+
+related works TODO
+
+Here summaries our main contributions,
+
+\begin{itemize}
+    \item To our best knowledge, it is the first time to combinate ConvLSTM with Deeplab architect for video matting.
+    \item We persent a possibility to apply video matting without background as input.
+\end{itemize}
 
 \section{Problem Statement}
 
-definition, and formulation
+definition, and formulation TODO
 
 \section{Methods}
 
+In this section, we will introduce both model structure and loss functions for this project.
+
 \subsection{Model Structure}
+
+The model is inspired from the base part of \cite{linRealTimeHighResolutionBackground2020a}, which can be divided into three parts as shown in Figure \ref{modelConvLSTM}. One of the major differences is the input size. Instead of images with background ($B\times 6\times H \times W$), we use video frames without background ($B\times T\times 3\times H \times W$) where $T$ refers to time. Another is we add ConvLSTM after each Decoder Block to obtain temporal features.
 
 \begin{figure*}[t]
     \begin{center}
@@ -116,8 +128,16 @@ definition, and formulation
 \end{figure*}
 
 \subsubsection{Encoder}
+
+The Encoder consists of four encoder blocks (EB), each contains a convolutional layer, a batch normalization layer and a ReLU activation layer. This architecture is taken from ResNet50 pretrained on ImageNet. It is by design that after each EB, the size of feature maps halves, and the number of channels increases in the order $[3, 64, 256, 512, 2048]$.
+
 \subsubsection{ASPP}
+
+Atrous Spatial Pyramid Pooling (ASPP) utilizes the fusion of multiple convolutions with different dilation rates to increase receptive field, shrink the size of feature maps, just like pooling. But, meanwhile, it can keep more informative features.
+
 \subsubsection{Decoder}
+
+The decoder can be divided into three decoder blocks (DB) and an output block (OB), each of them starts with upsampling, implemented by 2x bilinear interpolation. Together with output of each EB, the feature map then pass a convolutional layer, a batch normalization layer, a ReLU activation layer and ConvLSTM layer. The output size of each DB doubles and the number of channels decreases in the order  $[768, 384, 128, 51, 37]$. The OB generates the output directly, which contains 37 channels. The first channel is Alpha, which is the matte in greyscale. The next 3 channels are Foreground, it is designed to make the model focus more on the foreground. The next channel is Error, it is the predicted error, which will then be compared with the error between the predicted alpha and the ground truth alpha. The rest channels are set for the refine part of \cite{linRealTimeHighResolutionBackground2020a}, which is not used in this project. But we still remain these channels for easier transfer learning.
 
 \subsubsection{ConvLSTM}
 
@@ -135,25 +155,75 @@ definition, and formulation
 
 \subsection{Loss Function}
 
+TODO
+
 \section{Experiments}
+
+TODO
 
 \subsection{Experiment Setup}
 
 \subsubsection{Datasets}
 
+TODO
+
 \subsubsection{Metrics}
+
+TODO
+
+\paragraph{MAD (mean absolute difference)}
+
+TODO
+
+\paragraph{MSE (mean squared error)}
+
+TODO
+
+\paragraph{GRAD (Gradient)}
+
+TODO
+
+\paragraph{CONN (Connectivity)}
+
+TODO
 
 \subsubsection{Implementation}
 
+TODO
+
 \subsection{Experiment Results}
+
+TODO
+
+\begin{table}
+    \centering
+    \caption{caption}
+    \label{result}
+    \begin{tabular}{lcccc}
+        \toprule
+        {}       & MAD              & MSE              & GRAD             & CONN               \\
+        \midrule
+        original & \textbf{2.04}    & \textbf{0.94}    & \textbf{0.11}    & \textbf{102.40}    \\
+        \midrule
+        transfer & 8.09             & 5.44             & \underline{6.73} & 406.09             \\
+        convLSTM & \underline{5.18} & \underline{3.73} & 7.65             & \underline{259.67} \\
+        \bottomrule
+    \end{tabular}
+\end{table}
 
 \subsubsection{Comparing}
 
+TODO
+
 \subsubsection{Ablation Study}
+
+TODO
 
 \section{Conclusion}
 
-Conclusion \cite{chenRethinkingAtrousConvolution2017}
+Conclusion TODO
+
+\cite{chenRethinkingAtrousConvolution2017}
 
 \section{References}
 
@@ -164,7 +234,11 @@ Conclusion \cite{chenRethinkingAtrousConvolution2017}
 
 \subsection{Self Reflection}
 
+TODO
+
 \subsection{Confidential Peer Review}
+
+TODO
 
 In doing this project, to the best of my judgement,
 I confirm that Jiahao Zhang mainly contributed to TODO,
