@@ -308,7 +308,16 @@ The training loss is shown in Figure \ref{runs}.
 
 \subsection{Experiment Results}
 
-TODO
+To make comparsion, we did three experiments with same settings.
+With ConvLSTM is what we have proposed, Without ConvLSTM shares the same architecture but removes all ConvLSTM modules as shown in Figure \ref{model}. Original denotes the pretrained model by \cite{linRealTimeHighResolutionBackground2020a}, which needs both image and background as input.
+
+\begin{figure*}[htb]
+    \begin{center}
+        \includegraphics[width=1\textwidth]{img/visual.pdf}
+    \end{center}
+    \caption{Visualization of matting result at different frame across three models.}
+    \label{visual}
+\end{figure*}
 
 \begin{table}[htb]
     \centering
@@ -316,17 +325,17 @@ TODO
     \label{result}
     \begin{tabular}{lcccc}
         \toprule
-        {}       & MAD              & MSE              & GRAD             & CONN               \\
+        {}               & MAD              & MSE              & GRAD             & CONN               \\
         \midrule
-        original & \textbf{2.04}    & \textbf{0.94}    & \textbf{0.11}    & \textbf{102.40}    \\
+        Original         & \textbf{2.04}    & \textbf{0.94}    & \textbf{0.11}    & \textbf{102.40}    \\
         \midrule
-        transfer & 8.09             & 5.44             & \underline{6.73} & 406.09             \\
-        convLSTM & \underline{5.18} & \underline{3.73} & 7.65             & \underline{259.67} \\
+        w/ ConvLSTM    & \underline{5.18} & \underline{3.73} & 7.65             & \underline{259.67} \\
+        w/o ConvLSTM & 8.09             & 5.44             & \underline{6.73} & 406.09             \\
         \bottomrule
     \end{tabular}
 \end{table}
 
-\subsubsection{Comparing}
+\subsubsection{Discussion}
 
 TODO
 
@@ -365,7 +374,7 @@ and his/her contribution counts about 33\% of the total project workload.
 
 \begin{table}[htb]
     \centering
-    \caption{GitHub repositories.}
+    \caption{Easing functions used for motion data augmentation.}
     \label{easingFunctions}
     \begin{tabular}{cccc}
         \toprule
@@ -416,7 +425,7 @@ and his/her contribution counts about 33\% of the total project workload.
     \begin{center}
         \includegraphics[width=1\textwidth]{img/model.pdf}
     \end{center}
-    \caption{The architecture of our model.}
+    \caption{Model architcure of Without ConvLSTM.}
     \label{model}
 \end{figure*}
 
