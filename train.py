@@ -47,7 +47,6 @@ args = parser.parse_args()
 
 
 def train():
-    torch.autograd.set_detect_anomaly(True)
     # Training DataLoader
     dataset_train = VideoMatte240KDataset(
         video_matte_path=DATA_PATH[args.dataset_name]['train'],

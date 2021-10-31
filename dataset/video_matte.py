@@ -13,7 +13,8 @@ class VideoMatte240KDataset(Dataset):
                  background_image_path,
                  seq_length,
                  seq_sampler,
-                 transform=None):
+                 transform=None,
+                 background_image_id=None):
         self.background_image_path = background_image_path
         self.background_image_files = os.listdir(background_image_path)
         self.video_matte_path = video_matte_path
@@ -26,16 +27,31 @@ class VideoMatte240KDataset(Dataset):
         self.seq_length = seq_length
         self.seq_sampler = seq_sampler
         self.transform = transform
+        self.background_image_id = background_image_id
 
     def __len__(self):
         return len(self.video_matte_idx)
 
     def __getitem__(self, idx):
-        bgrs = self._get_random_image_background()
+        if self.background_image_id is not None:
+            bgrs = self._get_image_background()
+        else:
+            bgrs = self._get_random_image_background()
         fgrs, phas = self._get_video_matte(idx)
         if self.transform is not None:
             return self.transform(fgrs, phas, bgrs)
         return fgrs, phas, bgrs
+
+    def _get_image_background(self):
+        with Image.open(
+                os.path.join(
+                    self.background_image_path,
+                    self.background_image_files[self.background_image_id]
+                )
+        ) as bgr:
+            bgr = bgr.convert('RGB')
+        bgrs = [bgr] * self.seq_length
+        return bgrs
 
     def _get_random_image_background(self):
         with Image.open(os.path.join(self.background_image_path, random.choice(self.background_image_files))) as bgr:

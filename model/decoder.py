@@ -2,8 +2,6 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
-from model.convLSTM import ConvLSTM
-
 
 class Decoder(nn.Module):
     """
