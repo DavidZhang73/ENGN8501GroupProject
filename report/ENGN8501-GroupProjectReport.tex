@@ -102,9 +102,15 @@ related works TODO
 
 \paragraph{Semantic Segmentation}
 
+TODO
+
 \paragraph{Video Matting}
 
+TODO
+
 \paragraph{Convolutional LSTM}
+
+TODO
 
 Here summaries our main contributions,
 
@@ -130,9 +136,7 @@ We then define the video as a sequence of images (frames) $V=[i_1, i_2, \dots, i
 
 The alpha matte $\alpha$ works like a mask here, which means that during training, what we are actually doing is finding $i=\alpha i+(1-\alpha)i$ with constrains $f=\alpha i$ and $b=(1-\alpha)i$.
 
-We also follow \cite{linRealTimeHighResolutionBackground2020a}, not compute $F$ directly, but compute its residual $F_R=F-V$.
-
-Our network $G$ takes $V$ as input and predicts alpha matte $A'$, foreground residual $F_R'$ and error map $E$ and hidden features $H$. The model is fully convolutional therefore it accepts variant resolutions and aspect ratio.
+Our network $G$ takes $V$ as input and predicts alpha matte $A'$, foreground $F'$ and error map $E'$ and hidden features $H'$. The model is fully convolutional therefore it accepts variant resolutions and aspect ratio.
 
 \section{Methods}
 
@@ -160,7 +164,7 @@ Atrous Spatial Pyramid Pooling (ASPP) utilizes the fusion of multiple convolutio
 
 \subsubsection{Decoder}
 
-The decoder can be divided into three decoder blocks (DB) and an output block (OB), each of them starts with upsampling, implemented by 2x bilinear interpolation. Together with output of each EB, the feature map then pass a convolutional layer, a batch normalization layer, a ReLU activation layer and ConvLSTM layer. The output size of each DB doubles and the number of channels decreases in the order  $[768, 384, 128, 51, 37]$. The OB generates the output directly, which contains 37 channels. The first channel is Alpha, which is the matte in greyscale. The next 3 channels are Foreground (residual), it is designed to make the model focus more on the foreground. The next channel is Error, it is the predicted error, which will then be compared with the error between the predicted alpha and the ground truth alpha. The rest channels are set for the refine part of \cite{linRealTimeHighResolutionBackground2020a}, which is not used in this project. But we still remain these channels for easier transfer learning.
+The decoder can be divided into three decoder blocks (DB) and an output block (OB), each of them starts with upsampling, implemented by 2x bilinear interpolation. Together with output of each EB, the feature map then pass a convolutional layer, a batch normalization layer, a ReLU activation layer and ConvLSTM layer. The output size of each DB doubles and the number of channels decreases in the order  $[768, 384, 128, 51, 37]$. The OB generates the output directly, which contains 37 channels. The first channel is Alpha, which is the matte in greyscale. The next 3 channels are Foreground, it is designed to make the model focus more on the foreground. The next channel is Error, it is the predicted error, which will then be compared with the error between the predicted alpha and the ground truth alpha. The rest channels are set for the refine part of \cite{linRealTimeHighResolutionBackground2020a}, which is not used in this project. But we still remain these channels for easier transfer learning.
 
 \subsubsection{ConvLSTM}
 
@@ -186,6 +190,26 @@ The loss function is a combianation of three losses.
 \end{equation}\label{lossAlpha}
 
 The first loss is a L1 loss between ground truth alpha $\alpha^\star$ and predicted alpha $\alpha$, and their gradients (Sobel) defined as $\nabla \alpha$ and $\nabla \alpha^\star$ respectively. The gradients loss is added to learn about the contour of the matte.
+
+Then we measure the difference between foreground by L1 loss as
+
+\begin{equation}
+    \mathcal{L}_f=\Vert\alpha^*f'-\alpha^*f^*\Vert_1
+\end{equation}\label{lossForeground}
+
+Finally, the difference of errors is computed with L2 loss to guide the model concentrate more on the error or alpha matte, e.g. the hair of the human figure.
+
+\begin{equation}
+    \mathcal{L}_e=\Vert e'-e^*\Vert_1
+\end{equation}\label{lossError}
+
+where $e'$ is predicted by the model and $e^*=\alpha'-\alpha^*$.
+
+The model $G(V)=(A',F',E',H')$ is then trained in average of frames on following loss,
+
+\begin{equation}
+    \mathcal{L}_G=\frac{1}{n}\sum_{i=1}^{n}\left(\mathcal{L}_{\alpha_i}+\mathcal{L}_{f_i}+\mathcal{L}_{e_i}\right)
+\end{equation}\label{lossG}
 
 \section{Experiments}
 
