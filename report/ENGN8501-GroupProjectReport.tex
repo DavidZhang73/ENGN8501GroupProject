@@ -94,7 +94,7 @@
 
 \section{Introduction}
 
-background TODO
+background TODO + DEMO
 
 motivation TODO
 
@@ -123,20 +123,21 @@ Here summaries our main contributions,
 
 Given an image $i$ including one or more human figures (Foreground) $f$, we want to decompose it as
 
-\begin{equation}
+\begin{equation}\label{formulationImage}
     i=\alpha f+(1-\alpha)b
-\end{equation}\label{formulationImage}
+\end{equation}
 
 where $alpha$ is the alpha matte, denoted by a greyscale image.
 We then define the video as a sequence of images (frames) $V=[i_1, i_2, \dots, i_n]^T$, therefore the alpha matte $A$ is also a sequence of $\alpha$, so is the foreground $F$ and background $B$.
 
-\begin{equation}
+\begin{equation}\label{formulationVideo}
     V=AF+(1-A)B
-\end{equation}\label{formulationVideo}
+\end{equation}
 
 The alpha matte $\alpha$ works like a mask here, which means that during training, what we are actually doing is finding $i=\alpha i+(1-\alpha)i$ with constrains $f=\alpha i$ and $b=(1-\alpha)i$.
 
-Our network $G$ takes $V$ as input and predicts alpha matte $A'$, foreground $F'$ and error map $E'$ and hidden features $H'$. The model is fully convolutional therefore it accepts variant resolutions and aspect ratio.
+Our network $G$ takes $V$ as input and predicts alpha matte $A'$, foreground $F'$ and error map $E'$ and hidden features $H'$.
+The model is fully convolutional therefore it accepts variant resolutions and aspect ratio.
 
 \section{Methods}
 
@@ -144,7 +145,10 @@ In this section, we will introduce both model structure and loss functions for t
 
 \subsection{Model Structure}
 
-The model is inspired from the base part of \cite{linRealTimeHighResolutionBackground2020a}, which can be divided into three parts as shown in Figure \ref{modelConvLSTM}. One of the major differences is the input size. Instead of images with background ($B\times 6\times H \times W$), we use video frames without background ($B\times T\times 3\times H \times W$) where $T$ refers to time. Another is we add ConvLSTM after each Decoder Block to obtain temporal features.
+The model is inspired from the base part of \cite{linRealTimeHighResolutionBackground2020a}, which can be divided into three parts as shown in Figure \ref{modelConvLSTM}.
+One of the major differences is the input size.
+Instead of images with background ($B\times 6\times H \times W$), we use video frames without background ($B\times T\times 3\times H \times W$) where $T$ refers to time.
+Another is we add ConvLSTM after each Decoder Block to obtain temporal features.
 
 \begin{figure*}[htb]
     \begin{center}
@@ -156,19 +160,30 @@ The model is inspired from the base part of \cite{linRealTimeHighResolutionBackg
 
 \subsubsection{Encoder}
 
-The Encoder consists of four encoder blocks (EB), each contains a convolutional layer, a batch normalization layer and a ReLU activation layer. This architecture is taken from ResNet50 pretrained on ImageNet. It is by design that after each EB, the size of feature maps halves, and the number of channels increases in the order $[3, 64, 256, 512, 2048]$.
+The Encoder consists of four encoder blocks (EB), each contains a convolutional layer, a batch normalization layer and a ReLU activation layer.
+This architecture is taken from ResNet50 pretrained on ImageNet.
+It is by design that after each EB, the size of feature maps halves, and the number of channels increases in the order $[3, 64, 256, 512, 2048]$.
 
 \subsubsection{ASPP}
 
-Atrous Spatial Pyramid Pooling (ASPP) utilizes the fusion of multiple convolutions with different dilation rates to increase receptive field, shrink the size of feature maps, just like pooling. But, meanwhile, it can keep more informative features.
+Atrous Spatial Pyramid Pooling (ASPP) utilizes the fusion of multiple convolutions with different dilation rates to increase receptive field, shrink the size of feature maps, just like pooling.
+But, meanwhile, it can keep more informative features.
 
 \subsubsection{Decoder}
 
-The decoder can be divided into three decoder blocks (DB) and an output block (OB), each of them starts with upsampling, implemented by 2x bilinear interpolation. Together with output of each EB, the feature map then pass a convolutional layer, a batch normalization layer, a ReLU activation layer and ConvLSTM layer. The output size of each DB doubles and the number of channels decreases in the order  $[768, 384, 128, 51, 37]$. The OB generates the output directly, which contains 37 channels. The first channel is Alpha, which is the matte in greyscale. The next 3 channels are Foreground, it is designed to make the model focus more on the foreground. The next channel is Error, it is the predicted error, which will then be compared with the error between the predicted alpha and the ground truth alpha. The rest channels are set for the refine part of \cite{linRealTimeHighResolutionBackground2020a}, which is not used in this project. But we still remain these channels for easier transfer learning.
+The decoder can be divided into three decoder blocks (DB) and an output block (OB), each of them starts with upsampling, implemented by 2x bilinear interpolation.
+Together with output of each EB, the feature map then pass a convolutional layer, a batch normalization layer, a ReLU activation layer and ConvLSTM layer.
+The output size of each DB doubles and the number of channels decreases in the order  $[768, 384, 128, 51, 37]$.
+The OB generates the output directly, which contains 37 channels.
+The first channel is Alpha, which is the matte in greyscale.
+The next 3 channels are Foreground, it is designed to make the model focus more on the foreground.
+The next channel is Error, it is the predicted error, which will then be compared with the error between the predicted alpha and the ground truth alpha.
+The rest channels are set for the refine part of \cite{linRealTimeHighResolutionBackground2020a}, which is not used in this project.
+But we still remain these channels for easier transfer learning.
 
 \subsubsection{ConvLSTM}
 
-\begin{equation}
+\begin{equation}\label{convLSTM}
     \begin{aligned}
         \mathbf{i}_{\mathbf{t}} & = \operatorname{Sigmoid}\left(\operatorname{Conv}\left(\mathbf{x}_{\mathbf{t}} ; \mathbf{w}_{\mathbf{x i}}\right)+\operatorname{Conv}\left(\mathbf{h}_{\mathbf{t}-\mathbf{1}} ; \mathbf{w}_{\mathbf{h i}}\right)+\mathbf{b}_{\mathbf{i}}\right)    \\
         \mathbf{f}_{\mathbf{t}} & = \operatorname{Sigmoid}\left(\operatorname{Conv}\left(\mathbf{x}_{\mathbf{t}} ; \mathbf{w}_{\mathbf{x f}}\right)+\operatorname{Conv}\left(\mathbf{h}_{\mathbf{t}-\mathbf{1}} ; \mathbf{w}_{\mathbf{h f}}\right)+\mathbf{b}_{\mathbf{f}}\right)    \\
@@ -177,7 +192,7 @@ The decoder can be divided into three decoder blocks (DB) and an output block (O
         \mathbf{c}_{\mathbf{t}} & = \mathbf{f}_{\mathbf{t}} \odot \mathbf{c}_{\mathbf{t}-\mathbf{1}}+\mathbf{i}_{\mathbf{t}} \odot \mathbf{g}_{\mathbf{t}}                                                                                                                           \\
         \mathbf{h}_{\mathbf{t}} & = \mathbf{o}_{\mathbf{t}} \odot \operatorname{Tanh}\left(\mathbf{c}_{\mathbf{t}}\right)
     \end{aligned}
-\end{equation}\label{convLSTM}
+\end{equation}
 
 TODO
 
@@ -185,31 +200,32 @@ TODO
 
 The loss function is a combianation of three losses.
 
-\begin{equation}
+\begin{equation}\label{lossAlpha}
     \mathcal{L}_\alpha=\Vert\alpha-\alpha^\star\Vert_1+\Vert\nabla\alpha-\nabla\alpha^\star\Vert_1
-\end{equation}\label{lossAlpha}
+\end{equation}
 
-The first loss is a L1 loss between ground truth alpha $\alpha^\star$ and predicted alpha $\alpha$, and their gradients (Sobel) defined as $\nabla \alpha$ and $\nabla \alpha^\star$ respectively. The gradients loss is added to learn about the contour of the matte.
+The first loss is a L1 loss between ground truth alpha $\alpha^\star$ and predicted alpha $\alpha$, and their gradients (Sobel) defined as $\nabla \alpha$ and $\nabla \alpha^\star$ respectively.
+The gradients loss is added to learn about the contour of the matte.
 
 Then we measure the difference between foreground by L1 loss as
 
-\begin{equation}
+\begin{equation}\label{lossForeground}
     \mathcal{L}_f=\Vert\alpha^*f'-\alpha^*f^*\Vert_1
-\end{equation}\label{lossForeground}
+\end{equation}
 
 Finally, the difference of errors is computed with L2 loss to guide the model concentrate more on the error or alpha matte, e.g. the hair of the human figure.
 
-\begin{equation}
+\begin{equation}\label{lossError}
     \mathcal{L}_e=\Vert e'-e^*\Vert_1
-\end{equation}\label{lossError}
+\end{equation}
 
 where $e'$ is predicted by the model and $e^*=\alpha'-\alpha^*$.
 
 The model $G(V)=(A',F',E',H')$ is then trained in average of frames on following loss,
 
-\begin{equation}
-    \mathcal{L}_G=\frac{1}{n}\sum_{i=1}^{n}\left(\mathcal{L}_{\alpha_i}+\mathcal{L}_{f_i}+\mathcal{L}_{e_i}\right)
-\end{equation}\label{lossG}
+\begin{equation}\label{lossG}
+    \mathcal{L}_G=\frac{1}{n}\sum_{i=1}^n\left(\mathcal{L}_{\alpha_i}+\mathcal{L}_{f_i}+\mathcal{L}_{e_i}\right)
+\end{equation}
 
 \section{Experiments}
 
@@ -219,39 +235,84 @@ This section describes the dataset, metrics we use, how we train the model, show
 
 \subsubsection{Datasets}
 
-TODO
+The \href{https://grail.cs.washington.edu/projects/background-matting-v2/#/datasets}{VideoMatte240K} proposed by \cite{linRealTimeHighResolutionBackground2020a} takes too long to train (more than 24 hours for an epoch).
+So we use the subdataset of it and named it VideoMatte8K.
+It has 20 videos (7032 frames) as the training dataset and one video (928 frames) as the validation dataset.
+The \href{https://grail.cs.washington.edu/projects/background-matting-v2/#/datasets}{Background} dataset is the same one in \cite{linRealTimeHighResolutionBackground2020a}. Because the dataset is much smaller than the original one, inspired by \cite{linRobustHighResolutionVideo2021}, we did a lot of data augmentations on foreground, background and alpha matte at the same time to improve the robustness.
+Including static augmentation e.g. random affine, resize, horizontal flip, noise,color jitter, grayscale, sharpeness and blur, etc. and motion augmentation, mainly by easing functions list in Table \ref{easingFunctions}.
+To be able to run more epochs with limited computational resources, we decided to random crop and resize all frames to $224 \times 224$.
 
 \subsubsection{Metrics}
 
-TODO
+To measure the quantitative performance between the predicted alpha matte $\alpha'$ and ground truth $\alpha^*$, we use the following four metrics proposed by \cite{Rhemann2009APM}.
 
-\paragraph{MAD (mean absolute difference)}
+\paragraph{MAD (Mean Absolute Difference)}
 
-TODO
+\begin{equation}\label{mad}
+    \operatorname{MAD}(\alpha', \alpha^*)=\Vert\alpha'-\alpha^*\Vert_1
+\end{equation}
 
-\paragraph{MSE (mean squared error)}
+\paragraph{MSE (Mean Squared Error)}
 
-TODO
+\begin{equation}\label{mse}
+    \operatorname{MSE}(\alpha', \alpha^*)=\Vert\alpha'-\alpha^*\Vert_2^2
+\end{equation}
 
-\paragraph{GRAD (Gradient)}
+\paragraph{GRAD (Spatial-Gradient Metric)}
 
-TODO
+\begin{equation}\label{grad}
+    \operatorname{GRAD}(\alpha', \alpha^*)=\frac{1}{1000}\sum_i(\nabla \alpha'_i-\nabla \alpha^*_i)^q
+\end{equation}
+
+where we compute the sum of gradient difference on normalized alpha mattes.
+The $\alpha'_i$ and $\alpha^*_i$ are normalized from $\alpha'$ and $\alpha^*$ respectively.
+And the $\nabla$ denotes the first-order Gaussian derivative filters with variance $\sigma=1.4$. $q=2$ following \cite{linRealTimeHighResolutionBackground2020a}.
+Then scale down 1000 times for better readability.
 
 \paragraph{CONN (Connectivity)}
 
-TODO
+\begin{equation}\label{conn}
+    \operatorname{CONN}(\alpha', \alpha^*)=\frac{1}{1000}\sum_i\Vert\varphi(\alpha'_i,\Omega)-\varphi(\alpha^*_i,\Omega)\Vert_1
+\end{equation}
+
+The fewer differences does not always mean better performance, connectivity of predicted alpha matte is also essential.
+As shown in Equation \ref{conn}, $\varphi(\alpha_i,\Omega)$ means the connectivity for pixel $i$ in alpha matte $\alpha$ to the connected region source $\Omega$.
+E.g. if $\varphi=1$, the pixel it fully connected, $\varphi=0$, the pixel is not connected at all. Instead of using power of $p$, L1 norm is used here.
+Then scale down 1000 times for better readability.
 
 \subsubsection{Implementation}
 
-TODO
+Most code are adapted from the repositories on GitHub listed in Table \ref{repository}.
+The whole training process ran on a laptop with 8-core CPU at 3.80GHz with 32GB memory and an external RTX 2070 GPU.
+Due to the limitation of computational power, we ran 10 epochs for each experiment and set batch size to 4 and sequence length to 8.
+In this setting, the average load of GPU memory is 7.6GB out of 8GB.
+The original FPS (Frame Per Second) is 30, we modified it to be 10 fps by jumping pass two frames for every frame during data augmentation.
+Each sequence shares a same background and each batch contains frames from different videos, as shown in Figure \ref{batch}.
+
+The optimizer we used is AdamW, which is a fixed version of Adam.
+The learning rate is $[1e^{-4},5e^{-4},5e^{-4}]$ for Encoder, ASPP and Decoder respectively.
+
+Following the best practice and trade-off between speed and accuracy, we use native PyTorch automatic mixed precision.
+
+Because in the implementation of PyTorch code, Conv2D and ConvLSTM need different input size.
+We managed to solve it by flatten the input first to $BT\times C\times H \times W$, feed through Conv2D layers, e.g. EB, then un-flatten back to $B\times T\times C\times H \times W$ for training ConvLSTM module, and flatten again for the output.
+
+Training from scratch is difficult.
+We experienced a very unstable result when training from random weights (alpha matte is all black).
+So, we decided to apply transfer learning from fine-tuned pre-trained \href{https://drive.google.com/drive/folders/1cbetlrKREitIgjnIikG1HdM4x72FtgBh}{model} provided by \cite{linRealTimeHighResolutionBackground2020a}.
+It is trained by both $G_{base}$ and $G_{refine}$ on the multiple datasets including completed VideoMatte240K.
+For transfering training, $372$ out of $380$ modules are transferred, the rest modules are the first convolutional layer (weight + bias) and three ConvLSTM layer (3 x (weight + bias)).
+
+Each epoch takes around 45 minutes, plus two validation which takes extra 40 minutes, hence an experiment takes around 8 hours.
+The training loss is shown in Figure \ref{runs}.
 
 \subsection{Experiment Results}
 
 TODO
 
-\begin{table}
+\begin{table}[htb]
     \centering
-    \caption{caption}
+    \caption{caption TODO}
     \label{result}
     \begin{tabular}{lcccc}
         \toprule
@@ -271,7 +332,7 @@ TODO
 
 \subsubsection{Ablation Study}
 
-TODO
+TODO + DEMO
 
 \section{Conclusion}
 
@@ -297,5 +358,66 @@ Peng Zhang mainly worked on TODO,
 and his/her contribution is about 33\%,
 and Hang Zhang was responsible for TODO,
 and his/her contribution counts about 33\% of the total project workload.
+
+\appendix
+
+\section{Appendix}
+
+\begin{table}[htb]
+    \centering
+    \caption{GitHub repositories.}
+    \label{easingFunctions}
+    \begin{tabular}{cccc}
+        \toprule
+        LinearInOut      & BackEaseIn        \\ BackEaseOut        & BackEaseInOut        \\
+        BounceEaseIn     & BounceEaseOut     \\ BounceEaseInOut    & CircularEaseIn       \\
+        CircularEaseOut  & CircularEaseInOut \\ CubicEaseIn        & CubicEaseOut         \\
+        CubicEaseInOut   & ExponentialEaseIn \\ ExponentialEaseOut & ExponentialEaseInOut \\
+        ElasticEaseIn    & ElasticEaseOut    \\ ElasticEaseInOut   & QuadEaseIn           \\
+        QuadEaseOut      & QuadEaseInOut     \\ QuarticEaseIn      & QuarticEaseOut       \\
+        QuarticEaseInOut & QuinticEaseIn     \\ QuinticEaseOut     & QuinticEaseInOut     \\
+        SineEaseIn       & SineEaseOut       \\ SineEaseInOut \\
+        \bottomrule
+    \end{tabular}
+\end{table}
+
+\begin{table*}[htb]
+    \centering
+    \caption{GitHub repositories used for this project.}
+    \label{repository}
+    \begin{tabular}{ll}
+        \toprule
+        Repository                                                                                                                                                & Description                           \\
+        \midrule
+        \href{https://github.com/PeterL1n/BackgroundMattingV2}{Real-Time High-Resolution Background Matting}\cite{linRealTimeHighResolutionBackground2020a}       & Basic model and project structure     \\
+        \href{https://github.com/PeterL1n/RobustVideoMatting}{Robust High-Resolution Video Matting with Temporal Guidance}\cite{linRobustHighResolutionVideo2021} & Data augmentation, loader and metrics \\
+        \href{https://github.com/ndrplz/ConvLSTM_pytorch}{Convolutional LSTM Network}\cite{shiConvolutionalLSTMNetwork2015}                                       & ConvLSTM module                       \\
+        \bottomrule
+    \end{tabular}
+\end{table*}
+
+\begin{figure*}[htb]
+    \begin{center}
+        \includegraphics[width=1\textwidth]{img/batch.png}
+    \end{center}
+    \caption{Demonstration of a batch.}
+    \label{batch}
+\end{figure*}
+
+\begin{figure*}[htb]
+    \begin{center}
+        \includegraphics[width=1\textwidth]{img/runs.pdf}
+    \end{center}
+    \caption{Training loss.}
+    \label{runs}
+\end{figure*}
+
+\begin{figure*}[htb]
+    \begin{center}
+        \includegraphics[width=1\textwidth]{img/model.pdf}
+    \end{center}
+    \caption{The architecture of our model.}
+    \label{model}
+\end{figure*}
 
 \end{document}
