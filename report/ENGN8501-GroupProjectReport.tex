@@ -100,16 +100,39 @@ motivation TODO
 
 related works TODO
 
+\paragraph{Semantic Segmentation}
+
+\paragraph{Video Matting}
+
+\paragraph{Convolutional LSTM}
+
 Here summaries our main contributions,
 
 \begin{itemize}
-    \item To our best knowledge, it is the first time to combinate ConvLSTM with Deeplab architect for video matting.
+    \item To our best knowledge, it is the first time to combinate Convolutional LSTM with Deeplab architect for video matting.
     \item We persent a possibility to apply video matting without background as input.
 \end{itemize}
 
 \section{Problem Statement}
 
-definition, and formulation TODO
+Given an image $i$ including one or more human figures (Foreground) $f$, we want to decompose it as
+
+\begin{equation}
+    i=\alpha f+(1-\alpha)b
+\end{equation}\label{formulationImage}
+
+where $alpha$ is the alpha matte, denoted by a greyscale image.
+We then define the video as a sequence of images (frames) $V=[i_1, i_2, \dots, i_n]^T$, therefore the alpha matte $A$ is also a sequence of $\alpha$, so is the foreground $F$ and background $B$.
+
+\begin{equation}
+    V=AF+(1-A)B
+\end{equation}\label{formulationVideo}
+
+The alpha matte $\alpha$ works like a mask here, which means that during training, what we are actually doing is finding $i=\alpha i+(1-\alpha)i$ with constrains $f=\alpha i$ and $b=(1-\alpha)i$.
+
+We also follow \cite{linRealTimeHighResolutionBackground2020a}, not compute $F$ directly, but compute its residual $F_R=F-V$.
+
+Our network $G$ takes $V$ as input and predicts alpha matte $A'$, foreground residual $F_R'$ and error map $E$ and hidden features $H$. The model is fully convolutional therefore it accepts variant resolutions and aspect ratio.
 
 \section{Methods}
 
@@ -119,11 +142,11 @@ In this section, we will introduce both model structure and loss functions for t
 
 The model is inspired from the base part of \cite{linRealTimeHighResolutionBackground2020a}, which can be divided into three parts as shown in Figure \ref{modelConvLSTM}. One of the major differences is the input size. Instead of images with background ($B\times 6\times H \times W$), we use video frames without background ($B\times T\times 3\times H \times W$) where $T$ refers to time. Another is we add ConvLSTM after each Decoder Block to obtain temporal features.
 
-\begin{figure*}[t]
+\begin{figure*}[htb]
     \begin{center}
         \includegraphics[width=1\textwidth]{img/modelConvLSTM.pdf}
     \end{center}
-    \caption{The architecture of our network.}
+    \caption{The architecture of our model.}
     \label{modelConvLSTM}
 \end{figure*}
 
@@ -137,7 +160,7 @@ Atrous Spatial Pyramid Pooling (ASPP) utilizes the fusion of multiple convolutio
 
 \subsubsection{Decoder}
 
-The decoder can be divided into three decoder blocks (DB) and an output block (OB), each of them starts with upsampling, implemented by 2x bilinear interpolation. Together with output of each EB, the feature map then pass a convolutional layer, a batch normalization layer, a ReLU activation layer and ConvLSTM layer. The output size of each DB doubles and the number of channels decreases in the order  $[768, 384, 128, 51, 37]$. The OB generates the output directly, which contains 37 channels. The first channel is Alpha, which is the matte in greyscale. The next 3 channels are Foreground, it is designed to make the model focus more on the foreground. The next channel is Error, it is the predicted error, which will then be compared with the error between the predicted alpha and the ground truth alpha. The rest channels are set for the refine part of \cite{linRealTimeHighResolutionBackground2020a}, which is not used in this project. But we still remain these channels for easier transfer learning.
+The decoder can be divided into three decoder blocks (DB) and an output block (OB), each of them starts with upsampling, implemented by 2x bilinear interpolation. Together with output of each EB, the feature map then pass a convolutional layer, a batch normalization layer, a ReLU activation layer and ConvLSTM layer. The output size of each DB doubles and the number of channels decreases in the order  $[768, 384, 128, 51, 37]$. The OB generates the output directly, which contains 37 channels. The first channel is Alpha, which is the matte in greyscale. The next 3 channels are Foreground (residual), it is designed to make the model focus more on the foreground. The next channel is Error, it is the predicted error, which will then be compared with the error between the predicted alpha and the ground truth alpha. The rest channels are set for the refine part of \cite{linRealTimeHighResolutionBackground2020a}, which is not used in this project. But we still remain these channels for easier transfer learning.
 
 \subsubsection{ConvLSTM}
 
@@ -152,10 +175,17 @@ The decoder can be divided into three decoder blocks (DB) and an output block (O
     \end{aligned}
 \end{equation}\label{convLSTM}
 
+TODO
 
 \subsection{Loss Function}
 
-TODO
+The loss function is a combianation of three losses.
+
+\begin{equation}
+    \mathcal{L}_\alpha=\Vert\alpha-\alpha^\star\Vert_1+\Vert\nabla\alpha-\nabla\alpha^\star\Vert_1
+\end{equation}\label{lossAlpha}
+
+The first loss is a L1 loss between ground truth alpha $\alpha^\star$ and predicted alpha $\alpha$, and their gradients (Sobel) defined as $\nabla \alpha$ and $\nabla \alpha^\star$ respectively. The gradients loss is added to learn about the contour of the matte.
 
 \section{Experiments}
 
@@ -224,8 +254,6 @@ TODO
 Conclusion TODO
 
 \cite{chenRethinkingAtrousConvolution2017}
-
-\section{References}
 
 \bibliographystyle{ieee_fullname}
 \bibliography{reference}
