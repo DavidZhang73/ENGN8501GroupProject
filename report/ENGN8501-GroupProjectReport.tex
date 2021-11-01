@@ -94,10 +94,24 @@
 \section{Introduction}
 
 \begin{figure}[htb]
-    \begin{center}
-        \includegraphics[width=1\linewidth]{img/demo.pdf}
-    \end{center}
-    \caption{caption TODO.}
+    \centering
+    \subfloat[Input.]{
+        \label{demo1}
+        \includegraphics[width=0.47\linewidth]{img/demo1.pdf}
+    }
+    \subfloat[Output.]{
+        \label{demo2}
+        \includegraphics[width=0.47\linewidth]{img/demo2.pdf}
+    }\\
+    \subfloat[Background replacement.]{
+        \label{demo3}
+        \includegraphics[width=0.47\linewidth]{img/demo3.pdf}
+    }
+    \subfloat[DanMu avoidance.]{
+        \label{demo4}
+        \includegraphics[width=0.47\linewidth]{img/demo4.pdf}
+    }
+    \caption{Demonstration of video matting.}
     \label{demo}
 \end{figure}
 
@@ -332,11 +346,11 @@ With ConvLSTM is what we have proposed, Without ConvLSTM shares the same archite
     \label{result}
     \begin{tabular}{lcccc}
         \toprule
-        {}               & MAD              & MSE              & GRAD             & CONN               \\
+        {}           & MAD              & MSE              & GRAD             & CONN               \\
         \midrule
-        Original         & \textbf{2.04}    & \textbf{0.94}    & \textbf{0.11}    & \textbf{102.40}    \\
+        Original     & \textbf{2.04}    & \textbf{0.94}    & \textbf{0.11}    & \textbf{102.40}    \\
         \midrule
-        w/ ConvLSTM    & \underline{5.18} & \underline{3.73} & 7.65             & \underline{259.67} \\
+        w/ ConvLSTM  & \underline{5.18} & \underline{3.73} & 7.65             & \underline{259.67} \\
         w/o ConvLSTM & 8.09             & 5.44             & \underline{6.73} & 406.09             \\
         \bottomrule
     \end{tabular}
