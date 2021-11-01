@@ -95,11 +95,11 @@
 
 \begin{figure}[htb]
     \centering
-    \subfloat[Input.]{
+    \subfloat[Input video frames.]{
         \label{demo1}
         \includegraphics[width=0.47\linewidth]{img/demo1.pdf}
     }
-    \subfloat[Output.]{
+    \subfloat[Output alpha mattes.]{
         \label{demo2}
         \includegraphics[width=0.47\linewidth]{img/demo2.pdf}
     }\\
@@ -115,23 +115,38 @@
     \label{demo}
 \end{figure}
 
-background TODO + DEMO
+With the global pandemic of Covid-19, online meetings via tools like Zoom and Microsoft Teams have become daily routine.
+Background removal or replacement \ref{demo3} have become essential features to protect customers' privacy.
+Besides that, DanMu or bullet chat has been grown with a large number of followers across different video websites like BiliBili and AcFun.
+Despite its entertainment, DanMu avoidance \ref{demo4} has become a standard feature to reduce visual clutters and highlight the subject.
+A key challenge is that users of online conference application are rare to possess a green screen like those designed for movie special effects and for better user experience, you cannot require them to do so. As for online videos, it hard to obtain alpha mattes after the video is made with traditional methods.
 
-motivation TODO
-
-related works TODO
+Lin et al. \cite{linRealTimeHighResolutionBackground2020a} proposed a method for this task, but it requires an extra background image as input.
+Which is not suitable for the circumstances we mentioned above.
+Plus, with the input background image, we can directly get the alpha matte by subtracting background from input image.
+So we built up an end-to-end deep learning model to address this problem, which takes only video frames as input \ref{demo1} and outputs alpha mattes \ref{demo2} directly.
+To alleviate the negative impact caused by removing background, we add convolutional recurrent neural network modules to enhance temporal information learning.
+Combined with spatial features extracted from convolutional layers, we think the model should be able to learn and remember the previously displayed background, and motions of both background and foreground.
 
 \paragraph{Semantic Segmentation}
 
 TODO
+Video image matting can be regarded as a binary semantic segmentation task.
+
+Deeplab series
 
 \paragraph{Video Matting}
 
 TODO
+BMv1
+BMv2
+RBM
 
 \paragraph{Convolutional LSTM}
 
 TODO
+LSTM
+ConvLSTM
 
 Here summaries our main contributions,
 
