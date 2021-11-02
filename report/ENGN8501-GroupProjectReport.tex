@@ -284,7 +284,7 @@ The \href{https://grail.cs.washington.edu/projects/background-matting-v2/#/datas
 So we use the subdataset of it and named it VideoMatte8K.
 It has 20 videos (7032 frames) as the training dataset and one video (928 frames) as the validation dataset.
 The \href{https://grail.cs.washington.edu/projects/background-matting-v2/#/datasets}{Background} dataset is the same one in \cite{linRealTimeHighResolutionBackground2020a}. Because the dataset is much smaller than the original one, inspired by \cite{linRobustHighResolutionVideo2021}, we did a lot of data augmentations on foreground, background and alpha matte at the same time to improve the robustness.
-Including static augmentation e.g. random affine, resize, horizontal flip, noise,color jitter, grayscale, sharpeness and blur, etc. and motion augmentation, mainly by easing functions list in Table \ref{easingFunctions}.
+Including static augmentation e.g. random affine, resize, horizontal flip, noise, color jitter, grayscale, sharpness and blur, etc. and motion augmentation, mainly by easing functions list in Table \ref{easingFunctions}.
 To be able to run more epochs with limited computational resources, we decided to random crop and resize all frames to $224 \times 224$.
 
 \subsubsection{Metrics}
@@ -421,14 +421,12 @@ TODO
 
 \subsection{Confidential Peer Review}
 
-TODO
-
 In doing this project, to the best of my judgement,
-I confirm that Jiahao Zhang mainly contributed to TODO,
+I confirm that Jiahao Zhang mainly contributed to training part, finding solutions for exceptions, modifying model, dataset to be able to run on limited hardware.
 and his/her overall contribution is about 34\%,
-Peng Zhang mainly worked on TODO,
+Peng Zhang mainly worked on literature review, report writing, figuring out how ConvLSTM works and how to embed it into the network,
 and his/her contribution is about 33\%,
-and Hang Zhang was responsible for TODO,
+and Hang Zhang was responsible for evaluation, implementing metrics, finding suitable dataset for testing and visualizing charts and figures for report.
 and his/her contribution counts about 33\% of the total project workload.
 
 \appendix
