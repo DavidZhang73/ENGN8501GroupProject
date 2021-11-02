@@ -88,7 +88,30 @@
 
 \maketitle
 \begin{abstract}
-    TODO
+    The quick brown fox jumps over the lazy dog.
+    The quick brown fox jumps over the lazy dog.
+    The quick brown fox jumps over the lazy dog.
+    The quick brown fox jumps over the lazy dog.
+    The quick brown fox jumps over the lazy dog.
+    The quick brown fox jumps over the lazy dog.
+    The quick brown fox jumps over the lazy dog.
+    The quick brown fox jumps over the lazy dog.
+    The quick brown fox jumps over the lazy dog.
+    The quick brown fox jumps over the lazy dog.
+    The quick brown fox jumps over the lazy dog.
+    The quick brown fox jumps over the lazy dog.
+    The quick brown fox jumps over the lazy dog.
+    The quick brown fox jumps over the lazy dog.
+    The quick brown fox jumps over the lazy dog.
+    The quick brown fox jumps over the lazy dog.
+    The quick brown fox jumps over the lazy dog.
+    The quick brown fox jumps over the lazy dog.
+    The quick brown fox jumps over the lazy dog.
+    The quick brown fox jumps over the lazy dog.
+    The quick brown fox jumps over the lazy dog.
+    The quick brown fox jumps over the lazy dog.
+    The quick brown fox jumps over the lazy dog.
+    The quick brown fox jumps over the lazy dog.
 \end{abstract}
 
 \section{Introduction}
@@ -115,13 +138,21 @@
     \label{demo}
 \end{figure}
 
+\begin{figure*}[htb]
+    \begin{center}
+        \includegraphics[width=1\textwidth]{img/modelConvLSTM.pdf}
+    \end{center}
+    \caption{The architecture of our model.}
+    \label{modelConvLSTM}
+\end{figure*}
+
 With the global pandemic of Covid-19, online meetings via tools like Zoom and Microsoft Teams have become daily routine.
 Background removal or replacement \ref{demo3} have become essential features to protect customers' privacy.
 Besides that, DanMu or bullet chat has been grown with a large number of followers across different video websites like BiliBili and AcFun.
 Despite its entertainment, DanMu avoidance \ref{demo4} has become a standard feature to reduce visual clutters and highlight the subject.
 A key challenge is that users of online conference application are rare to possess a green screen like those designed for movie special effects and for better user experience, you cannot require them to do so. As for online videos, it hard to obtain alpha mattes after the video is made with traditional methods.
 
-Lin et al. \cite{linRealTimeHighResolutionBackground2020a} proposed a method for this task, but it requires an extra background image as input.
+Lin et al. \cite{linRealTimeHighResolutionBackground2020a} proposed a method for a similar task, but it requires an extra background image as input.
 Which is not suitable for the circumstances we mentioned above.
 Plus, with the input background image, we can directly get the alpha matte by subtracting background from input image.
 So we built up an end-to-end deep learning model to address this problem, which takes only video frames as input \ref{demo1} and outputs alpha mattes \ref{demo2} directly.
@@ -130,23 +161,28 @@ Combined with spatial features extracted from convolutional layers, we think the
 
 \paragraph{Semantic Segmentation}
 
-TODO
-Video image matting can be regarded as a binary semantic segmentation task.
-
-Deeplab series
+Ever since U-Net \cite{Ronneberger2015UNetCN} proposed for biomedical image segmentation, Encoder-Decoder has become the standard architecture for semantic segmentation.
+In the encoder, the size of feature maps gets smaller and the number of channels increases to gain larger and more informative receptive field.
+The latent features are then passed to the decoder, where feature maps are scaled up to match the input size.
+Skip connections between encoder and decoder provides the ability to pass information at different level of data compression.
+DeepLab V2 \cite{Chen2018DeepLabSI} and V3 \cite{chenRethinkingAtrousConvolution2017} introduces Atrous Spatial Pyramid Pooling (ASPP), which uses Atrous convolution as pooling operator to enhance the ability for increasing receptive field wittout loosing information.
+Because video image matting can be regarded as a binary semantic segmentation task initially, we adapt it as our base model.
 
 \paragraph{Video Matting}
 
-TODO
-BMv1
-BMv2
-RBM
+The method proposed by \cite{linRealTimeHighResolutionBackground2020a} contains a $G_{base}$ model based on DeepLab v3 and a Path-Refinement $G_{refine}$ model inspired by \cite{kirillovPointRendImageSegmentation2020}.
+We follow the basic idea from it and remove the background from input and adds ConvLSTM module.
+However, they published their new paper \cite{linRobustHighResolutionVideo2021} which also introduce ConvGRU module to the architecture, just after we submitted the project proposal.
+Frankly speaking, we were influenced by them in the later stages of the project.
+But we use the different RNN module and architecture details.
 
 \paragraph{Convolutional LSTM}
 
-TODO
-LSTM
-ConvLSTM
+Recurrent neural network (RNN) are originally designed for natural language processing, it can extract information from sequence data.
+As videos are a sequence of frames, we can fuse the ability of RNN with convolutional neural network (CNN).
+ConvLSTM (Convolutional Long-Short Time Memory) \cite{shiConvolutionalLSTMNetwork2015} was proposed for a weather forecast task, which given radar map, predicts weather and yields impressive result.
+Instead of computing hidden states and cell state using fully connection layers, ConvLSTM managed to use convolutional layers.
+Therefore, the ConvLSTM modules can extract both spatial and temporal features from the input.
 
 Here summaries our main contributions,
 
@@ -186,14 +222,6 @@ One of the major differences is the input size.
 Instead of images with background ($B\times 6\times H \times W$), we use video frames without background ($B\times T\times 3\times H \times W$) where $T$ refers to time.
 Another is we add ConvLSTM after each Decoder Block to obtain temporal features.
 
-\begin{figure*}[htb]
-    \begin{center}
-        \includegraphics[width=1\textwidth]{img/modelConvLSTM.pdf}
-    \end{center}
-    \caption{The architecture of our model.}
-    \label{modelConvLSTM}
-\end{figure*}
-
 \subsubsection{Encoder}
 
 The Encoder consists of four encoder blocks (EB), each contains a convolutional layer, a batch normalization layer and a ReLU activation layer.
@@ -202,7 +230,7 @@ It is by design that after each EB, the size of feature maps halves, and the num
 
 \subsubsection{ASPP}
 
-Atrous Spatial Pyramid Pooling (ASPP) utilizes the fusion of multiple convolutions with different dilation rates to increase receptive field, shrink the size of feature maps, just like pooling.
+Atrous Spatial Pyramid Pooling utilizes the fusion of multiple convolutions with different dilation rates to increase receptive field, shrink the size of feature maps, just like pooling.
 But, meanwhile, it can keep more informative features.
 
 \subsubsection{Decoder}
@@ -280,6 +308,14 @@ To be able to run more epochs with limited computational resources, we decided t
 
 \subsubsection{Metrics}
 
+\begin{figure*}[htb]
+    \begin{center}
+        \includegraphics[width=1\textwidth]{img/visual.pdf}
+    \end{center}
+    \caption{Visualization of matting result at different frame across three models.}
+    \label{visual}
+\end{figure*}
+
 To measure the quantitative performance between the predicted alpha matte $\alpha'$ and ground truth $\alpha^*$, we use the following four metrics proposed by \cite{Rhemann2009APM}.
 
 \paragraph{MAD (Mean Absolute Difference)}
@@ -345,19 +381,11 @@ The training loss is shown in Figure \ref{runs}.
 \subsection{Experiment Results}
 
 To make comparsion, we did three experiments with same settings.
-With ConvLSTM is what we have proposed, Without ConvLSTM shares the same architecture but removes all ConvLSTM modules as shown in Figure \ref{model}. Original denotes the pretrained model by \cite{linRealTimeHighResolutionBackground2020a}, which needs both image and background as input.
-
-\begin{figure*}[htb]
-    \begin{center}
-        \includegraphics[width=1\textwidth]{img/visual.pdf}
-    \end{center}
-    \caption{Visualization of matting result at different frame across three models.}
-    \label{visual}
-\end{figure*}
+With ConvLSTM is what we have proposed, Without ConvLSTM shares the same architecture but setting all the cell states and hidden state to be zeros. Original denotes the pretrained model by \cite{linRealTimeHighResolutionBackground2020a}, which needs both image and background as input.
 
 \begin{table}[htb]
     \centering
-    \caption{caption TODO}
+    \caption{Result across different model.}
     \label{result}
     \begin{tabular}{lcccc}
         \toprule
@@ -365,8 +393,8 @@ With ConvLSTM is what we have proposed, Without ConvLSTM shares the same archite
         \midrule
         Original     & \textbf{2.04}    & \textbf{0.94}    & \textbf{0.11}    & \textbf{102.40}    \\
         \midrule
-        w/ ConvLSTM  & \underline{5.18} & \underline{3.73} & 7.65             & \underline{259.67} \\
-        w/o ConvLSTM & 8.09             & 5.44             & \underline{6.73} & 406.09             \\
+        w/ ConvLSTM  & \underline{5.98} & \underline{3.72} & \underline{4.12} & \underline{299.99} \\
+        w/o ConvLSTM & 6.53             & 4.61             & 4.93             & 327.66             \\
         \bottomrule
     \end{tabular}
 \end{table}
@@ -376,6 +404,14 @@ With ConvLSTM is what we have proposed, Without ConvLSTM shares the same archite
 TODO
 
 \subsubsection{Ablation Study}
+
+\begin{figure}[htb]
+    \begin{center}
+        \includegraphics[width=1\linewidth]{img/ablationStudy.pdf}
+    \end{center}
+    \caption{caption TODO.}
+    \label{ablationStudy}
+\end{figure}
 
 TODO + DEMO
 
@@ -455,14 +491,6 @@ and his/her contribution counts about 33\% of the total project workload.
     \end{center}
     \caption{Training loss.}
     \label{runs}
-\end{figure*}
-
-\begin{figure*}[htb]
-    \begin{center}
-        \includegraphics[width=1\textwidth]{img/model.pdf}
-    \end{center}
-    \caption{Model architcure of Without ConvLSTM.}
-    \label{model}
 \end{figure*}
 
 \end{document}
