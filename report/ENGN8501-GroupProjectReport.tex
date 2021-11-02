@@ -88,30 +88,7 @@
 
 \maketitle
 \begin{abstract}
-    The quick brown fox jumps over the lazy dog.
-    The quick brown fox jumps over the lazy dog.
-    The quick brown fox jumps over the lazy dog.
-    The quick brown fox jumps over the lazy dog.
-    The quick brown fox jumps over the lazy dog.
-    The quick brown fox jumps over the lazy dog.
-    The quick brown fox jumps over the lazy dog.
-    The quick brown fox jumps over the lazy dog.
-    The quick brown fox jumps over the lazy dog.
-    The quick brown fox jumps over the lazy dog.
-    The quick brown fox jumps over the lazy dog.
-    The quick brown fox jumps over the lazy dog.
-    The quick brown fox jumps over the lazy dog.
-    The quick brown fox jumps over the lazy dog.
-    The quick brown fox jumps over the lazy dog.
-    The quick brown fox jumps over the lazy dog.
-    The quick brown fox jumps over the lazy dog.
-    The quick brown fox jumps over the lazy dog.
-    The quick brown fox jumps over the lazy dog.
-    The quick brown fox jumps over the lazy dog.
-    The quick brown fox jumps over the lazy dog.
-    The quick brown fox jumps over the lazy dog.
-    The quick brown fox jumps over the lazy dog.
-    The quick brown fox jumps over the lazy dog.
+    TODO
 \end{abstract}
 
 \section{Introduction}
@@ -225,7 +202,7 @@ Another is we add ConvLSTM after each Decoder Block to obtain temporal features.
 \subsubsection{Encoder}
 
 The Encoder consists of four encoder blocks (EB), each contains a convolutional layer, a batch normalization layer and a ReLU activation layer.
-This architecture is taken from ResNet50 pretrained on ImageNet.
+This architecture is taken from ResNet50 pretrained on ImageNet \cite{imagenet_cvpr09}.
 It is by design that after each EB, the size of feature maps halves, and the number of channels increases in the order $[3, 64, 256, 512, 2048]$.
 
 \subsubsection{ASPP}
@@ -308,7 +285,7 @@ To be able to run more epochs with limited computational resources, we decided t
 
 \subsubsection{Metrics}
 
-\begin{figure*}[htb]
+\begin{figure*}[t]
     \begin{center}
         \includegraphics[width=1\textwidth]{img/visual.pdf}
     \end{center}
@@ -361,7 +338,7 @@ In this setting, the average load of GPU memory is 7.6GB out of 8GB.
 The original FPS (Frame Per Second) is 30, we modified it to be 10 fps by jumping pass two frames for every frame during data augmentation.
 Each sequence shares a same background and each batch contains frames from different videos, as shown in Figure \ref{batch}.
 
-The optimizer we used is AdamW, which is a fixed version of Adam.
+The optimizer we used is AdamW \cite{Loshchilov2017FixingWD}, which is a fixed version of Adam.
 The learning rate is $[1e^{-4},5e^{-4},5e^{-4}]$ for Encoder, ASPP and Decoder respectively.
 
 Following the best practice and trade-off between speed and accuracy, we use native PyTorch automatic mixed precision.
@@ -383,7 +360,7 @@ The training loss is shown in Figure \ref{runs}.
 To make comparsion, we did three experiments with same settings.
 With ConvLSTM is what we have proposed, Without ConvLSTM shares the same architecture but setting all the cell states and hidden state to be zeros. Original denotes the pretrained model by \cite{linRealTimeHighResolutionBackground2020a}, which needs both image and background as input.
 
-\begin{table}[htb]
+\begin{table}[h]
     \centering
     \caption{Result across different model.}
     \label{result}
@@ -401,7 +378,9 @@ With ConvLSTM is what we have proposed, Without ConvLSTM shares the same archite
 
 \subsubsection{Discussion}
 
-TODO
+Due the insufficient training (less data, fewer epochs, etc.), and the lack of background information, the overall performance of our implementation is far worse than the Original.
+As shown in Figure \ref{visual}, the top part of hair and the bottom part of body are mis-predicted.
+But the face, neck and shoulder parts are remained as good as Original.
 
 \subsubsection{Ablation Study}
 
@@ -409,11 +388,19 @@ TODO
     \begin{center}
         \includegraphics[width=1\linewidth]{img/ablationStudy.pdf}
     \end{center}
-    \caption{caption TODO.}
+    \caption{Example channel of the hidden state in ConvLSTM module.}
     \label{ablationStudy}
 \end{figure}
 
-TODO + DEMO
+We did a ablation study on the ConvLSTM modules we added to offset the negative effects of removing the background.
+As shown in Table \ref{result}, although the result of Original is much better than what we implemented, the With ConvLSTM does overperforms Without ConvLSTM.
+And for qualitative comparison in Figure \ref{visual}, With ConvLSTM shows much better connectivity, clearer boundaries.
+Therefore the ConvLSTM module does enhance the model for better generalization.
+
+Then we want to know exactly how ConvLSTM helps the learning.
+We record the hidden states and cell states of the last ConvLSTM module as shown in Figure \ref{ablationStudy}.
+It is clear that some channels are able to learn and remember the motion of the human figure, e.g., the movements of the arms and trying to re-construct and enhance the background.
+In this way, the model can obtain the unobstructed background from previous frames, therefore this method should be robust enough to run without extra background image as input.
 
 \section{Conclusion}
 
