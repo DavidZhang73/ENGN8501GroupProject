@@ -235,7 +235,11 @@ But we still remain these channels for easier transfer learning.
     \end{aligned}
 \end{equation}
 
-TODO
+There are three gates control the compution of LSTM, input gate $\mathbf{i}_{\mathbf{t}}$, forget gate $\mathbf{f}_{\mathbf{t}}$ and output gate $\mathbf{o}_{\mathbf{t}}$. $\mathbf{g}_{\mathbf{t}}$ exists for expression simplification.
+Then compute the cell states $\mathbf{c}_{\mathbf{t}}$ and hidden states $\mathbf{h}_{\mathbf{t}}$ for passing to the next LSTM cell.
+We replace all the matrix multiplication with convolution to obtain ConvLSTM from standard LSTM.
+The hidden states are initialed to zeros for each frames in a batch, and iterate for each frame.
+Then we use the hidden states as output of ConvLSTM module to feed following convolution layers.
 
 \subsection{Loss Function}
 
