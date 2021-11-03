@@ -157,9 +157,9 @@ But we use the different RNN module and architecture details.
 
 Recurrent neural network (RNN) are originally designed for natural language processing, it can extract information from sequence data.
 As videos are a sequence of frames, we can fuse the ability of RNN with convolutional neural network (CNN).
-ConvLSTM (Convolutional Long-Short Time Memory) \cite{shiConvolutionalLSTMNetwork2015} was proposed for a weather forecast task, which given radar map, predicts weather and yields impressive result.
+ConvLSTM (Convolutional Long-Short Time Memory) \cite{shiConvolutionalLSTMNetwork2015} was proposed for a weather forecast task, which given radar maps, predicts weather and yields impressive result.
 Instead of computing hidden states and cell state using fully connection layers, ConvLSTM managed to use convolutional layers.
-Therefore, the ConvLSTM modules can extract both spatial and temporal features from the input.
+Therefore, the ConvLSTM modules can be used to extract both spatial and temporal features from the input.
 
 Here summaries our main contributions,
 
@@ -408,7 +408,16 @@ In this way, the model can obtain the unobstructed background from previous fram
 
 \section{Conclusion}
 
-Conclusion TODO
+We proposed a new DeepLab based video matting technique that requires no pre-captured background.
+Our method is robust enough to be use in more applications than the original paper.
+We add ConvLSTM to the model for better temporal generalization.
+Our experiment shows that the ConvLSTM module does work well as we design.
+
+There is a lot of work to do for this project.
+We have been limited by the computational power and time, have to choose to ignore several interesting proposals.
+For example, altering the position of ConvLSTM modules, comparing with ConvGRU, building a demo webcam real-time background replace application, etc.
+And most importantly, train the model with more data and epochs to reach state-of-art performance.
+But all in all, we show the great potentials of ConvLSTM for video matting task.
 
 \bibliographystyle{ieee_fullname}
 \bibliography{reference}
