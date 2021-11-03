@@ -1,3 +1,8 @@
+"""
+Model
+Adapted from https://github.com/PeterL1n/BackgroundMattingV2 by Jiahao Zhang
+"""
+
 import torch
 from torch import nn
 from torch.nn import functional as F

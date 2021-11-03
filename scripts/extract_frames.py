@@ -1,10 +1,15 @@
+"""
+Extract frames from videos with multi-thread
+Implemented by Jiahao Zhang
+"""
+
 import os
 from os import path
 
 from tqdm.contrib.concurrent import thread_map
 
-VIDEO_PATH = r'D:\Downloads\Background Matting\dataset\VideoMatte240KVideo'
-FRAME_PATH = r'D:\Downloads\Background Matting\dataset\VideoMatte240KFrames'
+VIDEO_PATH = r'<path>'
+FRAME_PATH = r'<path>'
 
 
 def get_task_list():

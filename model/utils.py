@@ -1,3 +1,6 @@
+"""
+load_matched_state_dict from https://github.com/PeterL1n/BackgroundMattingV2
+"""
 def load_matched_state_dict(model, state_dict, print_stats=True):
     """
     Only loads weights that matched in key and shape. Ignore other weights.

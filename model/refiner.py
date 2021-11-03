@@ -1,3 +1,6 @@
+"""
+refiner from https://github.com/PeterL1n/BackgroundMattingV2
+"""
 from typing import Tuple
 
 import torch

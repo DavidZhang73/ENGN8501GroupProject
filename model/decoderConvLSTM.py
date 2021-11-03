@@ -1,3 +1,7 @@
+"""
+The new Decoder with ConvLSTM
+Adapted from https://github.com/PeterL1n/BackgroundMattingV2 by Hang Zhang
+"""
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
@@ -37,6 +41,9 @@ class Decoder(nn.Module):
         self.convLSTM3 = ConvLSTM(input_dim=channels[3], hidden_dim=channels[3], batch_first=True)
         self.conv4 = nn.Conv2d(feature_channels[3] + channels[3], channels[4], 3, padding=1)
         self.relu = nn.ReLU()
+        self.state1 = None
+        self.state2 = None
+        self.state3 = None
 
     def forward(self, x4, x3, x2, x1, x0, b, t):
         x = interpolate(x4, x3.shape[2:])
@@ -45,7 +52,8 @@ class Decoder(nn.Module):
         x = self.bn1(x)
         x = self.relu(x)
         x = x.unflatten(0, (b, t))
-        (x,), _ = self.convLSTM1(x, None)
+        (x,), state1 = self.convLSTM1(x, None)
+        self.state1 = state1
         x = x.flatten(0, 1)
 
         x = interpolate(x, x2.shape[2:])
@@ -54,7 +62,8 @@ class Decoder(nn.Module):
         x = self.bn2(x)
         x = self.relu(x)
         x = x.unflatten(0, (b, t))
-        (x,), _ = self.convLSTM2(x, None)
+        (x,), state2 = self.convLSTM2(x, None)
+        self.state2 = state2
         x = x.flatten(0, 1)
 
         x = interpolate(x, x1.shape[2:])
@@ -63,7 +72,8 @@ class Decoder(nn.Module):
         x = self.bn3(x)
         x = self.relu(x)
         x = x.unflatten(0, (b, t))
-        (x,), _ = self.convLSTM3(x, None)
+        (x,), state3 = self.convLSTM3(x, None)
+        self.state3 = state3
         x = x.flatten(0, 1)
 
         x = interpolate(x, x0.shape[2:])

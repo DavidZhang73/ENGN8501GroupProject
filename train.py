@@ -1,3 +1,8 @@
+"""
+Train
+Adapted from https://github.com/PeterL1n/BackgroundMattingV2 by Jiahao Zhang
+"""
+
 import argparse
 import os
 
@@ -22,12 +27,11 @@ from model.utils import load_matched_state_dict
 
 parser = argparse.ArgumentParser()
 
-parser.add_argument('--dataset-name', type=str, default='videomatte20k', choices=DATA_PATH.keys())
-parser.add_argument('--model-backbone', type=str, default='resnet50', choices=['resnet101', 'resnet50', 'mobilenetv2'])
-parser.add_argument('--model-name', type=str, default='transferConvLSTM2')
+parser.add_argument('--dataset-name', type=str, default='videomatte8k', choices=DATA_PATH.keys())
+parser.add_argument('--model-backbone', type=str, default='resnet50', choices=['resnet50'])
+parser.add_argument('--model-name', type=str, default='convLSTM')
 parser.add_argument('--model-pretrain-initialization', type=str, default=None)
-parser.add_argument('--model-last-checkpoint', type=str,
-                    default=r'D:\Downloads\Background Matting\models\pytorch_resnet50.pth')
+parser.add_argument('--model-last-checkpoint', type=str, default=r'<path to last checkpoint>')
 
 parser.add_argument('--batch-size', type=int, default=4)
 parser.add_argument('--seq-length', type=int, default=8)

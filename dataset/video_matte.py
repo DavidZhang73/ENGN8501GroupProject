@@ -1,3 +1,7 @@
+"""
+Dataset
+Adapted from https://github.com/PeterL1n/RobustVideoMatting by Jiahao Zhang
+"""
 import os
 import random
 

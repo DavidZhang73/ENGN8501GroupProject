@@ -1,3 +1,8 @@
+"""
+Encoder with mobilenet
+Adapted from https://github.com/PeterL1n/BackgroundMattingV2 by Jiahao Zhang
+"""
+
 from torch import nn
 from torchvision.models import MobileNetV2
 

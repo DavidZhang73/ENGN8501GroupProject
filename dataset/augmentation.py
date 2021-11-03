@@ -1,3 +1,8 @@
+"""
+Data augmentation
+Adapted from https://github.com/PeterL1n/RobustVideoMatting by Jiahao Zhang
+"""
+
 import random
 
 import easing_functions as ef
@@ -55,11 +60,12 @@ class MotionAugmentation:
         bgrs = torch.stack([F.to_tensor(bgr) for bgr in bgrs])
 
         # Resize
-        params = transforms.RandomResizedCrop.get_params(fgrs, scale=(1, 1), ratio=self.aspect_ratio_range)
-        fgrs = F.resized_crop(fgrs, *params, self.size, interpolation=F.InterpolationMode.BILINEAR)
-        phas = F.resized_crop(phas, *params, self.size, interpolation=F.InterpolationMode.BILINEAR)
-        params = transforms.RandomResizedCrop.get_params(bgrs, scale=(1, 1), ratio=self.aspect_ratio_range)
-        bgrs = F.resized_crop(bgrs, *params, self.size, interpolation=F.InterpolationMode.BILINEAR)
+        if self.size is not None:
+            params = transforms.RandomResizedCrop.get_params(fgrs, scale=(1, 1), ratio=self.aspect_ratio_range)
+            fgrs = F.resized_crop(fgrs, *params, self.size, interpolation=F.InterpolationMode.BILINEAR)
+            phas = F.resized_crop(phas, *params, self.size, interpolation=F.InterpolationMode.BILINEAR)
+            params = transforms.RandomResizedCrop.get_params(bgrs, scale=(1, 1), ratio=self.aspect_ratio_range)
+            bgrs = F.resized_crop(bgrs, *params, self.size, interpolation=F.InterpolationMode.BILINEAR)
 
         # Horizontal flip
         if random.random() < self.prob_hflip:
@@ -227,6 +233,24 @@ def random_easing_fn():
             ef.SineEaseInOut,
             Step,
         ])()
+
+
+class ValidAugmentation:
+    def __init__(self, size):
+        self.size = size
+
+    def __call__(self, fgrs, phas, bgrs):
+        fgrs = torch.stack([F.to_tensor(fgr) for fgr in fgrs])
+        phas = torch.stack([F.to_tensor(pha) for pha in phas])
+        bgrs = torch.stack([F.to_tensor(bgr) for bgr in bgrs])
+
+        # Resize
+        if self.size is not None:
+            m = min(self.size)
+            fgrs = F.center_crop(F.resize(fgrs, m), self.size)
+            phas = F.center_crop(F.resize(phas, m), self.size)
+            bgrs = F.center_crop(F.resize(bgrs, m), self.size)
+        return fgrs, phas, bgrs
 
 
 class Step:  # Custom easing function for sudden change.

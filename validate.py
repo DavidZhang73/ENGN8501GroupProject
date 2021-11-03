@@ -1,3 +1,8 @@
+"""
+Validation
+Implemented by Peng Zhang
+"""
+
 import argparse
 import os
 
@@ -17,15 +22,10 @@ from model.utils import load_matched_state_dict
 
 parser = argparse.ArgumentParser()
 
-parser.add_argument('--dataset-name', type=str, default='videomatte20k', choices=DATA_PATH.keys())
+parser.add_argument('--dataset-name', type=str, default='videomatte8k', choices=DATA_PATH.keys())
 parser.add_argument('--model-backbone', type=str, default='resnet50', choices=['resnet50'])
-parser.add_argument(
-    '--model-checkpoint',
-    type=str,
-    default=r'D:\Downloads\Background Matting\models\pytorch_resnet50.pth'
-)
-parser.add_argument('--output-path', type=str,
-                    default=r'D:\Downloads\Background Matting\dataset\VideoMatte20KFrames\valid')
+parser.add_argument('--model-checkpoint', type=str, default=r'<path to checkpoint>')
+parser.add_argument('--output-path', type=str, default=r'<path to output>')
 parser.add_argument('--seq-length', type=int, default=1)
 parser.add_argument('--num-workers', type=int, default=0)
 
@@ -74,7 +74,12 @@ with torch.no_grad():
         true_src = true_fgr * true_pha + true_src * (1 - true_pha)
         pred_pha, pred_fgr, pred_err = model(true_src)[:3]
 
+        state = model.decoder.state3
+
         index_start = i * args.seq_length
+        for i in range(state[0][0].size()[1]):
+            save_img_tensor_list(state[0][0][:, i, :, :].unsqueeze(0), index_start, f'state_h_{i}')
+            save_img_tensor_list(state[0][1][:, i, :, :].unsqueeze(0), index_start, f'state_c_{i}')
         save_img_tensor_list(pred_pha, index_start, 'pred_pha')
         save_img_tensor_list(true_pha, index_start, 'true_pha')
         save_img_tensor_list(pred_err, index_start, 'pred_err')

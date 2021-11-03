@@ -1,4 +1,7 @@
-# https://github.com/ndrplz/ConvLSTM_pytorch
+"""
+ConvLSTM
+Adapted from https://github.com/ndrplz/ConvLSTM_pytorch by Hang Zhang
+"""
 
 import torch
 import torch.nn as nn
@@ -137,6 +140,10 @@ class ConvLSTM(nn.Module):
         if hidden_state is not None:
             if len(hidden_state) != self.num_layers:
                 raise ValueError('len(hidden_state) != num_layers')
+            else:
+                for i in range(0, self.num_layers):
+                    hidden_state[i][0] = hidden_state[i][0].detach()
+                    hidden_state[i][1] = hidden_state[i][1].detach()
         else:
             # Since the init is done in forward. Can send image size here
             hidden_state = self._init_hidden(batch_size=b,

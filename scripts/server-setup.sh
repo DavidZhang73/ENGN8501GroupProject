@@ -1,3 +1,6 @@
+# Server setup script
+# Implemented by Jiahao Zhang
+
 ssh mist@gpu166.mistgpu.xyz -p 31110
 
 # prepare data

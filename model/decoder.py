@@ -1,3 +1,8 @@
+"""
+The Original Decoder
+Adapted from https://github.com/PeterL1n/BackgroundMattingV2 by Jiahao Zhang
+"""
+
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
