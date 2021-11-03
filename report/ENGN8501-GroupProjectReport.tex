@@ -88,7 +88,8 @@
 
 \maketitle
 \begin{abstract}
-    TODO
+    We proposed a new DeepLab-based end-to-end architecture with ConvLSTM modules for video matting. The main challenge is alleviating the negative impact of removing pre-captured background from input. To achieve this goal, we add three ConvLSTM modules into the model to obtain temporal features to re-construct background from previous frames. We proved and showed how the ConvLSTM module help the inference. The original paper refers to Real-Time High-Resolution Background Matting \cite{linRealTimeHighResolutionBackground2020a}. Our code and data
+    is available at \href{https://github.com/DavidZhang73/ENGN8501GroupProject}{https://github.com/DavidZhang73/ENGN8501GroupProject}.
 \end{abstract}
 
 \section{Introduction}
@@ -442,6 +443,14 @@ and his/her contribution counts about 33\% of the total project workload.
 
 \section{Appendix}
 
+\begin{figure}[htb]
+    \begin{center}
+        \includegraphics[width=1\linewidth]{img/batch.png}
+    \end{center}
+    \caption{Demonstration of a batch.}
+    \label{batch}
+\end{figure}
+
 \begin{table}[htb]
     \centering
     \caption{Easing functions used for motion data augmentation.}
@@ -474,14 +483,6 @@ and his/her contribution counts about 33\% of the total project workload.
         \bottomrule
     \end{tabular}
 \end{table*}
-
-\begin{figure*}[htb]
-    \begin{center}
-        \includegraphics[width=1\textwidth]{img/batch.png}
-    \end{center}
-    \caption{Demonstration of a batch.}
-    \label{batch}
-\end{figure*}
 
 \begin{figure*}[htb]
     \begin{center}
