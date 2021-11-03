@@ -72,7 +72,6 @@
 % run, let it finish, and you should be clear).
 \usepackage[pagebackref=true,breaklinks=true,colorlinks,bookmarks=false]{hyperref}
 
-
 \def\cvprPaperID{8501} % *** Enter the CVPR Paper ID here
 \def\confYear{CVPR 2021}
 %\setcounter{page}{4321} % For final version only
@@ -140,7 +139,7 @@ Combined with spatial features extracted from convolutional layers, we think the
 \paragraph{Semantic Segmentation}
 
 Ever since U-Net \cite{Ronneberger2015UNetCN} proposed for biomedical image segmentation, Encoder-Decoder has become the standard architecture for semantic segmentation.
-In the encoder, the size of feature maps gets smaller and the number of channels increases to gain larger and more informative receptive field.
+In the encoder, the size of feature maps gets smaller, and the number of channels increases to gain larger and more informative receptive field.
 The latent features are then passed to the decoder, where feature maps are scaled up to match the input size.
 Skip connections between encoder and decoder provides the ability to pass information at different level of data compression.
 DeepLab V2 \cite{Chen2018DeepLabSI} and V3 \cite{chenRethinkingAtrousConvolution2017} introduces Atrous Spatial Pyramid Pooling (ASPP), which uses Atrous convolution as pooling operator to enhance the ability for increasing receptive field wittout loosing information.
@@ -156,17 +155,17 @@ But we use the different RNN module and architecture details.
 
 \paragraph{Convolutional LSTM}
 
-Recurrent neural network (RNN) are originally designed for natural language processing, it can extract information from sequence data.
+Recurrent neural network (RNN) is originally designed for natural language processing, it can extract information from sequence data.
 As videos are a sequence of frames, we can fuse the ability of RNN with convolutional neural network (CNN).
 ConvLSTM (Convolutional Long-Short Time Memory) \cite{shiConvolutionalLSTMNetwork2015} was proposed for a weather forecast task, which given radar maps, predicts weather and yields impressive result.
-Instead of computing hidden states and cell state using fully connection layers, ConvLSTM managed to use convolutional layers.
+Instead of computing hidden states and cell states using fully connection layers, ConvLSTM managed to use convolutional layers.
 Therefore, the ConvLSTM modules can be used to extract both spatial and temporal features from the input.
 
 Here summaries our main contributions,
 
 \begin{itemize}
     \item To our best knowledge, it is the first time to combinate Convolutional LSTM with Deeplab architect for video matting.
-    \item We persent a possibility to apply video matting without background as input.
+    \item We present a possibility to apply video matting without background as input.
 \end{itemize}
 
 \section{Problem Statement}
@@ -214,8 +213,8 @@ But, meanwhile, it can keep more informative features.
 \subsubsection{Decoder}
 
 The decoder can be divided into three decoder blocks (DB) and an output block (OB), each of them starts with upsampling, implemented by 2x bilinear interpolation.
-Together with output of each EB, the feature map then pass a convolutional layer, a batch normalization layer, a ReLU activation layer and ConvLSTM layer.
-The output size of each DB doubles and the number of channels decreases in the order  $[768, 384, 128, 51, 37]$.
+Together with output of each EB, the feature map then passes a convolutional layer, a batch normalization layer, a ReLU activation layer and ConvLSTM layer.
+The output size of each DB doubles and the number of channels decreases in the order $[768, 384, 128, 51, 37]$.
 The OB generates the output directly, which contains 37 channels.
 The first channel is Alpha, which is the matte in greyscale.
 The next 3 channels are Foreground, it is designed to make the model focus more on the foreground.
@@ -236,15 +235,15 @@ But we still remain these channels for easier transfer learning.
     \end{aligned}
 \end{equation}
 
-There are three gates control the compution of LSTM, input gate $\mathbf{i}_{\mathbf{t}}$, forget gate $\mathbf{f}_{\mathbf{t}}$ and output gate $\mathbf{o}_{\mathbf{t}}$. $\mathbf{g}_{\mathbf{t}}$ exists for expression simplification.
+There are three gates control the computation of LSTM, input gate $\mathbf{i}_{\mathbf{t}}$, forget gate $\mathbf{f}_{\mathbf{t}}$ and output gate $\mathbf{o}_{\mathbf{t}}$. $\mathbf{g}_{\mathbf{t}}$ exists for expression simplification.
 Then compute the cell states $\mathbf{c}_{\mathbf{t}}$ and hidden states $\mathbf{h}_{\mathbf{t}}$ for passing to the next LSTM cell.
 We replace all the matrix multiplication with convolution to obtain ConvLSTM from standard LSTM.
-The hidden states are initialed to zeros for each frames in a batch, and iterate for each frame.
+The hidden states are initialed to zeros for each frame in a batch, and iterate for each frame.
 Then we use the hidden states as output of ConvLSTM module to feed following convolution layers.
 
 \subsection{Loss Function}
 
-The loss function is a combianation of three losses.
+The loss function is a combination of three losses.
 
 \begin{equation}\label{lossAlpha}
     \mathcal{L}_\alpha=\Vert\alpha-\alpha^\star\Vert_1+\Vert\nabla\alpha-\nabla\alpha^\star\Vert_1
@@ -282,10 +281,10 @@ This section describes the dataset, metrics we use, how we train the model, show
 \subsubsection{Datasets}
 
 The \href{https://grail.cs.washington.edu/projects/background-matting-v2/#/datasets}{VideoMatte240K} proposed by \cite{linRealTimeHighResolutionBackground2020a} takes too long to train (more than 24 hours for an epoch).
-So we use the subdataset of it and named it VideoMatte8K.
+So we use the sub-dataset of it and named it VideoMatte8K.
 It has 20 videos (7032 frames) as the training dataset and one video (928 frames) as the validation dataset.
-The \href{https://grail.cs.washington.edu/projects/background-matting-v2/#/datasets}{Background} dataset is the same one in \cite{linRealTimeHighResolutionBackground2020a}. Because the dataset is much smaller than the original one, inspired by \cite{linRobustHighResolutionVideo2021}, we did a lot of data augmentations on foreground, background and alpha matte at the same time to improve the robustness.
-Including static augmentation e.g. random affine, resize, horizontal flip, noise, color jitter, grayscale, sharpness and blur, etc. and motion augmentation, mainly by easing functions list in Table \ref{easingFunctions}.
+The \href{https://grail.cs.washington.edu/projects/background-matting-v2/#/datasets}{Background} dataset is the same one in \cite{linRealTimeHighResolutionBackground2020a}. Because the dataset is much smaller than the original one, inspired by \cite{linRobustHighResolutionVideo2021}, we did a lot of data augmentations on foreground, background, and alpha matte at the same time to improve the robustness.
+Including static augmentation e.g., random affine, resize, horizontal flip, noise, color jitter, grayscale, sharpness, and blur, etc. and motion augmentation, mainly by easing functions list in Table \ref{easingFunctions}.
 To be able to run more epochs with limited computational resources, we decided to random crop and resize all frames to $224 \times 224$.
 
 \subsubsection{Metrics}
@@ -329,7 +328,7 @@ Then scale down 1000 times for better readability.
     \operatorname{CONN}(\alpha', \alpha^*)=\frac{1}{1000}\sum_i\Vert\varphi(\alpha'_i,\Omega)-\varphi(\alpha^*_i,\Omega)\Vert_1
 \end{equation}
 
-The fewer differences does not always mean better performance, connectivity of predicted alpha matte is also essential.
+The fewer differences do not always mean better performance, connectivity of predicted alpha matte is also essential.
 As shown in Equation \ref{conn}, $\varphi(\alpha_i,\Omega)$ means the connectivity for pixel $i$ in alpha matte $\alpha$ to the connected region source $\Omega$.
 E.g. if $\varphi=1$, the pixel it fully connected, $\varphi=0$, the pixel is not connected at all. Instead of using power of $p$, L1 norm is used here.
 Then scale down 1000 times for better readability.
@@ -341,7 +340,7 @@ The whole training process ran on a laptop with 8-core CPU at 3.80GHz with 32GB 
 Due to the limitation of computational power, we ran 10 epochs for each experiment and set batch size to 4 and sequence length to 8.
 In this setting, the average load of GPU memory is 7.6GB out of 8GB.
 The original FPS (Frame Per Second) is 30, we modified it to be 10 fps by jumping pass two frames for every frame during data augmentation.
-Each sequence shares a same background and each batch contains frames from different videos, as shown in Figure \ref{batch}.
+Each sequence shares a same background, and each batch contains frames from different videos, as shown in Figure \ref{batch}.
 
 The optimizer we used is AdamW \cite{Loshchilov2017FixingWD}, which is a fixed version of Adam.
 The learning rate is $[1e^{-4},5e^{-4},5e^{-4}]$ for Encoder, ASPP and Decoder respectively.
@@ -355,14 +354,14 @@ Training from scratch is difficult.
 We experienced a very unstable result when training from random weights (alpha matte is all black).
 So, we decided to apply transfer learning from fine-tuned pre-trained \href{https://drive.google.com/drive/folders/1cbetlrKREitIgjnIikG1HdM4x72FtgBh}{model} provided by \cite{linRealTimeHighResolutionBackground2020a}.
 It is trained by both $G_{base}$ and $G_{refine}$ on the multiple datasets including completed VideoMatte240K.
-For transfering training, $372$ out of $380$ modules are transferred, the rest modules are the first convolutional layer (weight + bias) and three ConvLSTM layer (3 x (weight + bias)).
+For transferring training, $372$ out of $380$ modules are transferred, the rest modules are the first convolutional layer (weight + bias) and three ConvLSTM layer (3 x (weight + bias)).
 
-Each epoch takes around 45 minutes, plus two validation which takes extra 40 minutes, hence an experiment takes around 8 hours.
+Each epoch takes around 45 minutes, plus two validation which takes extra 40 minutes; hence an experiment takes around 8 hours.
 The training loss is shown in Figure \ref{runs}.
 
 \subsection{Experiment Results}
 
-To make comparsion, we did three experiments with same settings.
+To make comparison, we did three experiments with same settings.
 With ConvLSTM is what we have proposed, Without ConvLSTM shares the same architecture but setting all the cell states and hidden state to be zeros. Original denotes the pretrained model by \cite{linRealTimeHighResolutionBackground2020a}, which needs both image and background as input.
 
 \begin{table}[h]
@@ -397,10 +396,10 @@ But the face, neck and shoulder parts are remained as good as Original.
     \label{ablationStudy}
 \end{figure}
 
-We did a ablation study on the ConvLSTM modules we added to offset the negative effects of removing the background.
+We did an ablation study on the ConvLSTM modules we added to offset the negative effects of removing the background.
 As shown in Table \ref{result}, although the result of Original is much better than what we implemented, the With ConvLSTM does overperforms Without ConvLSTM.
 And for qualitative comparison in Figure \ref{visual}, With ConvLSTM shows much better connectivity, clearer boundaries.
-Therefore the ConvLSTM module does enhance the model for better generalization.
+Therefore, the ConvLSTM module does enhance the model for better generalization.
 
 Then we want to know exactly how ConvLSTM helps the learning.
 We record the hidden states and cell states of the last ConvLSTM module as shown in Figure \ref{ablationStudy}.
@@ -415,7 +414,7 @@ We add ConvLSTM to the model for better temporal generalization.
 Our experiment shows that the ConvLSTM module does work well as we design.
 
 There is a lot of work to do for this project.
-We have been limited by the computational power and time, have to choose to ignore several interesting proposals.
+We have been limited by the computational power and time, must choose to ignore several interesting proposals.
 For example, altering the position of ConvLSTM modules, comparing with ConvGRU, building a demo webcam real-time background replace application, etc.
 And most importantly, train the model with more data and epochs to reach state-of-art performance.
 But all in all, we show the great potentials of ConvLSTM for video matting task.
