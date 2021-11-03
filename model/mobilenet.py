@@ -1,6 +1,6 @@
 """
 Encoder with mobilenet
-Adapted from https://github.com/PeterL1n/BackgroundMattingV2 by Jiahao Zhang
+From https://github.com/PeterL1n/BackgroundMattingV2
 """
 
 from torch import nn

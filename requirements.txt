@@ -1,0 +1,8 @@
+kornia==0.5.11
+tensorboard==2.7.0
+tensorboardX==2.4
+torch==1.7.0
+torchvision==0.8.1
+tqdm==4.51.0
+opencv-python==4.5.3.56
+onnxruntime==1.9.0
